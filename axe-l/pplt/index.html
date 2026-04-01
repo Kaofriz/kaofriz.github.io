@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPLT — Parasocial Projection Learning Theory</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:  #0a0f1e;
+  --navy2: #0f172a;
+  --navy3: #1e293b;
+  --border: rgba(148,163,184,.15);
+  --border2: rgba(148,163,184,.28);
+  --text:  #e2e8f0;
+  --muted: #94a3b8;
+  --dim:   #64748b;
+  --gold:  #c9a96e;
+  --gold2: #e8c98a;
+  --teal:  #2dd4bf;
+}
+html{scroll-behavior:smooth;background:var(--navy)}
+body{
+  background:var(--navy);color:var(--text);
+  font-family:'Inter','Meiryo','Meiryo UI',sans-serif;
+  line-height:1.75;min-height:100vh;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(148,163,184,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(148,163,184,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;z-index:0;
+}
+.ja{display:revert}.en{display:none}
+body.en-mode .ja{display:none}body.en-mode .en{display:revert}
+
+#topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,15,30,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:52px;
+}
+#topbar a.back{
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);text-decoration:none;transition:color .2s;
+}
+#topbar a.back:hover{color:var(--gold2);}
+#lang-btn{
+  padding:5px 14px;border-radius:20px;
+  border:1px solid var(--border2);
+  background:transparent;color:var(--text);
+  font-family:'DM Mono',monospace;
+  font-size:.72rem;letter-spacing:.06em;
+  cursor:pointer;transition:border-color .2s,color .2s;
+}
+#lang-btn:hover{border-color:var(--teal);color:var(--teal);}
+
+.hero{
+  position:relative;z-index:1;
+  max-width:780px;margin:0 auto;
+  padding:96px 48px 64px;
+}
+.hero-label{
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:24px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-label::before{content:'';display:block;width:24px;height:1px;background:var(--teal);}
+.hero h1{
+  font-size:clamp(1.6rem,4vw,2.6rem);
+  font-weight:300;color:var(--text);line-height:1.2;margin-bottom:8px;
+}
+.hero h1 em{font-style:normal;color:var(--teal);font-weight:500;}
+.hero .version{
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;color:var(--dim);margin-top:16px;
+}
+
+.content{
+  position:relative;z-index:1;
+  max-width:780px;margin:0 auto;
+  padding:0 48px 120px;
+}
+hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
+
+.sec{margin-bottom:56px;}
+.sec-label{
+  font-family:'DM Mono',monospace;
+  font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:8px;
+}
+.sec h2{
+  font-size:1.15rem;font-weight:400;color:var(--text);
+  margin-bottom:20px;padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.sec p{font-size:.92rem;color:var(--muted);line-height:1.9;margin-bottom:14px;}
+.sec p:last-child{margin-bottom:0;}
+
+/* KEY CLAIM BOX */
+.claim{
+  background:var(--navy2);
+  border:1px solid var(--border2);
+  border-left:3px solid var(--teal);
+  border-radius:4px;
+  padding:24px 28px;
+  margin:32px 0;
+}
+.claim p{font-size:.93rem;color:var(--text);line-height:1.85;margin:0;}
+
+/* COMPARISON TABLE */
+.cmp-wrap{overflow-x:auto;margin-top:16px;}
+table{width:100%;border-collapse:collapse;font-size:.82rem;}
+thead th{
+  background:var(--navy2);
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);padding:10px 14px;
+  border-bottom:1px solid var(--border2);
+  text-align:left;
+}
+tbody td{
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  color:var(--muted);vertical-align:top;
+}
+tbody tr:last-child td{border-bottom:none;}
+tbody td:first-child{color:var(--text);font-weight:400;}
+
+/* LOOP */
+.loop{
+  display:flex;align-items:center;flex-wrap:wrap;gap:8px;
+  margin-top:16px;
+}
+.loop-item{
+  font-family:'DM Mono',monospace;
+  font-size:.72rem;padding:6px 14px;
+  background:var(--navy2);border:1px solid var(--border2);
+  border-radius:2px;color:var(--muted);
+}
+.loop-arrow{color:var(--dim);font-size:.8rem;}
+
+/* RQ LIST */
+.rq-list{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+.rq-item{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:3px;padding:14px 18px;
+  font-size:.88rem;color:var(--muted);line-height:1.7;
+}
+
+/* DRAFT NOTE */
+.draft-note{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:4px;padding:18px 22px;margin-top:48px;
+}
+.draft-note p{
+  font-family:'DM Mono',monospace;
+  font-size:.7rem;color:var(--dim);line-height:1.8;
+}
+
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:32px 48px;max-width:780px;margin:0 auto;
+}
+footer p{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--dim);}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <a class="back" href="../">← AXE-L</a>
+  <button id="lang-btn" onclick="toggleLang()">JA</button>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Draft Theory · AXE-L</div>
+  <h1>PPLT<br><em>Parasocial Projection<br>Learning Theory</em></h1>
+  <p class="version"><span class="en">Draft v0.2 · 2026</span><span class="ja">草稿 v0.2 · 2026年</span></p>
+</div>
+
+<div class="content">
+
+  <!-- CORE CLAIM -->
+  <div class="sec">
+    <div class="claim">
+      <p>
+        <span class="en">The fundamental distinction of PPLT from existing motivational theories is that <strong>the source of motivation lies outside the learning activity itself.</strong> Learners form parasocial relationships with media figures or characters and project their ideal selves onto those figures. This projection functions as a persistent motivational force that drives learning without a defined endpoint.</span>
+        <span class="ja">PPLTが既存の動機理論と根本的に異なる点は、<strong>動機の源泉が学習活動そのものの外にある</strong>という構造にある。学習者はメディア人物やキャラクターにパラソーシャル関係を形成し、その対象に理想自己を投影する。この投影が、ゴールを持たない持続的な学習動機として機能する。</span>
+      </p>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- BACKGROUND -->
+  <div class="sec">
+    <div class="sec-label"><span class="en">Background</span><span class="ja">背景</span></div>
+    <h2><span class="en">The Problem with Existing Theories</span><span class="ja">既存理論の限界</span></h2>
+    <p>
+      <span class="en">Self-Determination Theory (Deci & Ryan) explains motivation through autonomy, competence, and relatedness — but does not account for how a relationship with a non-existent figure can function as a motivational source. The L2 Motivational Self System (Dörnyei) proposes that an ideal L2 self drives language learning, but does not sufficiently address how that ideal self is formed.</span>
+      <span class="ja">Self-Determination Theory（Deci & Ryan）は動機を自律性・有能感・関係性によって説明するが、「実在しない対象との関係」がどのように学習動機として機能するかを説明しない。L2 Motivational Self System（Dörnyei）は理想L2自己が動機を生むと説明するが、その理想自己がどのように形成されるかについては十分に議論されていない。</span>
+    </p>
+    <p>
+      <span class="en">Existing theories describe goal-oriented motivation: learners work toward a defined goal (a degree, an exam, employment) and the motivation subsides once that goal is reached. PPLT describes immersive motivation: entered through personal interest or parasocial engagement, with no defined goal — and therefore no endpoint.</span>
+      <span class="ja">既存理論が説明する動機は「目標到達型」である：学習者は設定した目標に向かって行動し、目標達成で動機は消える。PPLTが説明する動機は「没入型」である：推し活や個人的興味を入り口とし、ゴールを持たないため際限なく続く。</span>
+    </p>
+  </div>
+
+  <hr>
+
+  <!-- STRUCTURE -->
+  <div class="sec">
+    <div class="sec-label"><span class="en">Structure</span><span class="ja">理論構造</span></div>
+    <h2><span class="en">Three Components</span><span class="ja">三つの構成要素</span></h2>
+
+    <div class="cmp-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><span class="en">Component</span><span class="ja">要素</span></th>
+            <th><span class="en">Description</span><span class="ja">説明</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>① Parasocial Relation</td>
+            <td><span class="en">The learner forms a psychological sense of closeness with a media figure or character.</span><span class="ja">学習者はメディア人物やキャラクターに対して心理的な親密感を形成する。</span></td>
+          </tr>
+          <tr>
+            <td>② Projection</td>
+            <td><span class="en">The learner projects their ideal self or values onto that figure.</span><span class="ja">学習者はその対象に理想自己や価値観を投影する。</span></td>
+          </tr>
+          <tr>
+            <td>③ Learning Engagement</td>
+            <td><span class="en">Learning behaviour — language, culture, knowledge — emerges as a means of approaching the figure.</span><span class="ja">対象に近づくための手段として、言語・文化・知識などの学習行動が生まれる。</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:24px;font-size:.82rem;color:var(--dim);">
+      <span class="en">The motivational loop:</span><span class="ja">動機のループ：</span>
+    </p>
+    <div class="loop">
+      <span class="loop-item">Parasocial Relation</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-item">Projection</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-item">Learning</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-item">Understanding / Satisfaction</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-item">Reinforcement</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-item">Deeper Parasocial Relation</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- COMPARISON -->
+  <div class="sec">
+    <div class="sec-label"><span class="en">Comparison</span><span class="ja">比較</span></div>
+    <h2><span class="en">PPLT vs. Existing Theories</span><span class="ja">PPLTと既存理論の比較</span></h2>
+    <div class="cmp-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><span class="en">Dimension</span><span class="ja">比較軸</span></th>
+            <th><span class="en">SDT / Dörnyei</span><span class="ja">SDT・Dörnyei</span></th>
+            <th>PPLT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="en">Source of motivation</span><span class="ja">動機の源泉</span></td>
+            <td><span class="en">Internal to learning</span><span class="ja">学習内部</span></td>
+            <td><span class="en">External to learning</span><span class="ja">学習の外</span></td>
+          </tr>
+          <tr>
+            <td><span class="en">Motivation type</span><span class="ja">動機の型</span></td>
+            <td><span class="en">Goal-oriented</span><span class="ja">目標到達型</span></td>
+            <td><span class="en">Immersive / open-ended</span><span class="ja">没入型・際限なし</span></td>
+          </tr>
+          <tr>
+            <td><span class="en">Relationship premise</span><span class="ja">関係性の前提</span></td>
+            <td><span class="en">Bidirectional</span><span class="ja">双方向性</span></td>
+            <td><span class="en">Unidirectional</span><span class="ja">一方向性でも機能</span></td>
+          </tr>
+          <tr>
+            <td><span class="en">Sustainability</span><span class="ja">持続性</span></td>
+            <td><span class="en">May end at goal completion</span><span class="ja">目標達成で消滅しうる</span></td>
+            <td><span class="en">Sustained as long as projection continues</span><span class="ja">投影が続く限り持続</span></td>
+          </tr>
+          <tr>
+            <td><span class="en">Efficiency optimisation</span><span class="ja">タイパ最適化</span></td>
+            <td><span class="en">Skipping non-assessed tasks likely</span><span class="ja">スキップが起きやすい</span></td>
+            <td><span class="en">Skip motivation low</span><span class="ja">スキップ動機が生まれにくい</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- RQ -->
+  <div class="sec">
+    <div class="sec-label"><span class="en">Research Questions</span><span class="ja">リサーチクエスチョン</span></div>
+    <h2><span class="en">Research Questions</span><span class="ja">リサーチクエスチョン</span></h2>
+    <div class="rq-list">
+      <div class="rq-item"><span class="en">How does parasocial projection affect the sustainability of learning motivation?</span><span class="ja">パラソーシャル投影は学習動機の持続性にどのように影響するか。</span></div>
+      <div class="rq-item"><span class="en">How does projection depth differ across real figures, virtual characters, and AI characters?</span><span class="ja">実在人物・仮想キャラクター・AIキャラクターの間で、投影の深さはどのように異なるか。</span></div>
+      <div class="rq-item"><span class="en">How does projection depth affect learning effort and sustained comprehension?</span><span class="ja">投影の深さは学習努力や理解の持続にどのように影響するか。</span></div>
+      <div class="rq-item"><span class="en">What is the relationship between PPLT-driven motivation and existing motivational frameworks (SDT, L2 Motivational Self System)?</span><span class="ja">PPLTによる学習動機は、既存の動機理論とどのような関係にあるか。</span></div>
+    </div>
+  </div>
+
+  <div class="draft-note">
+    <p><span class="en">Draft theory — part of the AXE-L framework. Related implementation: Dodo smartphone app (in development).</span><span class="ja">草稿理論 — AXE-Lフレームワークの一部。関連実装：Dodoスマートフォンアプリ（開発中）。</span></p>
+  </div>
+
+</div>
+
+<footer>
+  <p>PPLT · AXE-L · kaofriz.github.io · 2026</p>
+</footer>
+
+<script>
+let currentLang = 'en';
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'ja' : 'en';
+  document.body.classList.toggle('en-mode', currentLang === 'en');
+  document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'JA' : 'EN';
+}
+document.body.classList.add('en-mode');
+</script>
+</body>
+</html>

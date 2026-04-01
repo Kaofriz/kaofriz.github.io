@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXE-L — Axes of Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:  #0a0f1e;
+  --navy2: #0f172a;
+  --navy3: #1e293b;
+  --border: rgba(148,163,184,.15);
+  --border2: rgba(148,163,184,.28);
+  --text:  #e2e8f0;
+  --muted: #94a3b8;
+  --dim:   #64748b;
+  --gold:  #c9a96e;
+  --gold2: #e8c98a;
+  --teal:  #2dd4bf;
+  --teal2: #5eead4;
+}
+html{scroll-behavior:smooth;background:var(--navy)}
+body{
+  background:var(--navy);color:var(--text);
+  font-family:'Inter','Meiryo','Meiryo UI',sans-serif;
+  line-height:1.75;min-height:100vh;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(148,163,184,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(148,163,184,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;z-index:0;
+}
+
+/* NAV */
+#topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,15,30,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:52px;
+}
+#topbar a.back{
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);text-decoration:none;transition:color .2s;
+}
+#topbar a.back:hover{color:var(--gold2);}
+#topbar .nav-right{display:flex;gap:24px;}
+#topbar .nav-right a{
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;transition:color .2s;
+}
+#topbar .nav-right a:hover{color:var(--muted);}
+
+/* HERO */
+.hero{
+  position:relative;z-index:1;
+  max-width:780px;margin:0 auto;
+  padding:96px 48px 72px;
+}
+.hero-label{
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:24px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-label::before{content:'';display:block;width:24px;height:1px;background:var(--teal);}
+.hero h1{
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  font-weight:300;color:var(--text);line-height:1.2;margin-bottom:8px;
+}
+.hero h1 em{font-style:normal;color:var(--teal);font-weight:500;}
+.hero .tagline{
+  font-size:.95rem;color:var(--muted);
+  margin-top:20px;max-width:580px;line-height:1.9;
+}
+
+/* CONTENT */
+.content{
+  position:relative;z-index:1;
+  max-width:780px;margin:0 auto;
+  padding:0 48px 120px;
+}
+
+hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
+
+/* SECTION */
+.sec{margin-bottom:56px;}
+.sec-label{
+  font-family:'DM Mono',monospace;
+  font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:8px;
+}
+.sec h2{
+  font-size:1.2rem;font-weight:400;color:var(--text);
+  margin-bottom:24px;padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.sec p{font-size:.93rem;color:var(--muted);line-height:1.9;margin-bottom:14px;}
+
+/* THEORY TAGS */
+.tag-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.tag{
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;letter-spacing:.06em;
+  padding:5px 12px;border-radius:2px;
+  background:var(--navy2);
+  border:1px solid var(--border2);
+  color:var(--muted);
+}
+
+/* PRACTICE LIST */
+.practice-list{
+  display:flex;flex-direction:column;gap:1px;
+  border:1px solid var(--border);border-radius:4px;overflow:hidden;
+  margin-top:4px;
+}
+.practice-item{
+  background:var(--navy2);
+  padding:18px 22px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.practice-item h4{
+  font-size:.92rem;font-weight:500;color:var(--text);
+}
+.practice-item p{
+  font-size:.82rem;color:var(--dim);
+  line-height:1.6;margin:0;
+}
+
+/* PORTFOLIO CARD */
+.portfolio-card{
+  background:var(--navy2);
+  border:1px solid var(--border2);
+  border-left:3px solid var(--teal);
+  border-radius:4px;
+  padding:24px 28px;
+  margin-top:4px;
+}
+.portfolio-card h4{
+  font-size:.92rem;font-weight:500;color:var(--text);
+  margin-bottom:8px;
+}
+.portfolio-card p{
+  font-size:.85rem;color:var(--dim);line-height:1.75;margin:0;
+}
+.status-badge{
+  display:inline-block;
+  font-family:'DM Mono',monospace;
+  font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 9px;border-radius:2px;
+  background:rgba(45,212,191,.08);
+  border:1px solid rgba(45,212,191,.2);
+  color:var(--teal);
+  margin-left:10px;vertical-align:middle;
+}
+
+/* FOOTER */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:32px 48px;
+  max-width:780px;margin:0 auto;
+}
+footer p{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--dim);}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <a class="back" href="https://kaofriz.github.io">← kaofriz.github.io</a>
+  <div class="nav-right">
+    <a href="../axi/">AXI</a>
+    <a href="../axes/">AXES</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Lifelong Learning</div>
+  <h1>AXE-L<br><em>Axes of Learning</em></h1>
+  <p class="tagline">AXIの原則を学習に応用した、学習者中心の自律的生涯学習フレームワーク。既存の専門・制度的教育を補完するものとして位置づけられる。あらゆる関心領域を学習の軸として蓄積し、軸と軸の接続によって認識が深まるという多軸的学習観に基づく。画一的な評価基準ではなく、学習者自身の関心と達成感がドライブになる。</p>
+</div>
+
+<div class="content">
+
+  <!-- RELATED THEORIES -->
+  <div class="sec">
+    <div class="sec-label">Related Concepts</div>
+    <h2>関連する学習理論・概念</h2>
+    <div class="tag-wrap">
+      <span class="tag">Transformative Learning</span>
+      <span class="tag">Heutagogy</span>
+      <span class="tag">Portfolio-based Learning</span>
+      <span class="tag">Interdisciplinary Learning</span>
+      <span class="tag">Reflective Practice</span>
+      <span class="tag">Task-based Learning</span>
+      <span class="tag">PPLT</span>
+      <span class="tag">Gamification</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- PRACTICE IDEAS -->
+  <div class="sec">
+    <div class="sec-label">Practice Ideas</div>
+    <h2>実践アイデア</h2>
+    <div class="practice-list">
+      <div class="practice-item">
+        <h4>AI対話リフレクション</h4>
+        <p>AIとの対話を通じた思考の外在化と深化。対話ログが学習記録として機能する。</p>
+      </div>
+      <div class="practice-item">
+        <h4>Creative writing を通した思考実験</h4>
+        <p>創作実践を認識論的探求の手段として位置づける。書くことが知識獲得を駆動する逆転モデル。</p>
+      </div>
+      <div class="practice-item">
+        <h4>Dodo スマートフォンアプリ <span class="status-badge">開発中</span></h4>
+        <p>日本語学習を起点としたAXE-Lの実装例。カメラによる物体認識・発音練習・語彙蓄積を統合。</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- PORTFOLIO -->
+  <div class="sec">
+    <div class="sec-label">Portfolio Vision</div>
+    <h2>ポートフォリオ構想</h2>
+    <div class="portfolio-card">
+      <h4>曼陀羅マップ <span class="status-badge">構想中</span></h4>
+      <p>学習者を中心に置き、蓄積された学習の軸をバブルとして多軸的に可視化するポートフォリオ。各軸の接続がスパークを生む。Gamificationによる継続的達成感の設計を組み込む。</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>AXE-L · kaofriz.github.io · 2026</p>
+</footer>
+
+</body>
+</html>

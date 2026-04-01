@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AXE-L — Axes of Learning</title>
+<title>AXES — Axes of Epistemic System</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -18,8 +18,8 @@
   --dim:   #64748b;
   --gold:  #c9a96e;
   --gold2: #e8c98a;
+  --blue:  #60a5fa;
   --teal:  #2dd4bf;
-  --teal2: #5eead4;
 }
 html{scroll-behavior:smooth;background:var(--navy)}
 body{
@@ -67,18 +67,18 @@ body::before{
 .hero-label{
   font-family:'DM Mono',monospace;
   font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--teal);margin-bottom:24px;
+  color:var(--blue);margin-bottom:24px;
   display:flex;align-items:center;gap:12px;
 }
-.hero-label::before{content:'';display:block;width:24px;height:1px;background:var(--teal);}
+.hero-label::before{content:'';display:block;width:24px;height:1px;background:var(--blue);}
 .hero h1{
   font-size:clamp(1.8rem,4vw,2.8rem);
   font-weight:300;color:var(--text);line-height:1.2;margin-bottom:8px;
 }
-.hero h1 em{font-style:normal;color:var(--teal);font-weight:500;}
+.hero h1 em{font-style:normal;color:var(--blue);font-weight:500;}
 .hero .tagline{
   font-size:.95rem;color:var(--muted);
-  margin-top:20px;max-width:580px;line-height:1.9;
+  margin-top:20px;max-width:560px;line-height:1.85;
 }
 
 /* CONTENT */
@@ -88,10 +88,8 @@ body::before{
   padding:0 48px 120px;
 }
 
-hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
-
 /* SECTION */
-.sec{margin-bottom:56px;}
+.sec{margin-bottom:64px;}
 .sec-label{
   font-family:'DM Mono',monospace;
   font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
@@ -104,62 +102,7 @@ hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
 }
 .sec p{font-size:.93rem;color:var(--muted);line-height:1.9;margin-bottom:14px;}
 
-/* THEORY TAGS */
-.tag-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
-.tag{
-  font-family:'DM Mono',monospace;
-  font-size:.68rem;letter-spacing:.06em;
-  padding:5px 12px;border-radius:2px;
-  background:var(--navy2);
-  border:1px solid var(--border2);
-  color:var(--muted);
-}
-
-/* PRACTICE LIST */
-.practice-list{
-  display:flex;flex-direction:column;gap:1px;
-  border:1px solid var(--border);border-radius:4px;overflow:hidden;
-  margin-top:4px;
-}
-.practice-item{
-  background:var(--navy2);
-  padding:18px 22px;
-  display:flex;flex-direction:column;gap:4px;
-}
-.practice-item h4{
-  font-size:.92rem;font-weight:500;color:var(--text);
-}
-.practice-item p{
-  font-size:.82rem;color:var(--dim);
-  line-height:1.6;margin:0;
-}
-
-/* PORTFOLIO CARD */
-.portfolio-card{
-  background:var(--navy2);
-  border:1px solid var(--border2);
-  border-left:3px solid var(--teal);
-  border-radius:4px;
-  padding:24px 28px;
-  margin-top:4px;
-}
-.portfolio-card h4{
-  font-size:.92rem;font-weight:500;color:var(--text);
-  margin-bottom:8px;
-}
-.portfolio-card p{
-  font-size:.85rem;color:var(--dim);line-height:1.75;margin:0;
-}
-.status-badge{
-  display:inline-block;
-  font-family:'DM Mono',monospace;
-  font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
-  padding:3px 9px;border-radius:2px;
-  background:rgba(45,212,191,.08);
-  border:1px solid rgba(45,212,191,.2);
-  color:var(--teal);
-  margin-left:10px;vertical-align:middle;
-}
+hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
 
 /* LANG TOGGLE */
 .ja { display: revert; }
@@ -174,7 +117,110 @@ body.en-mode .en { display: revert; }
   font-size:.72rem;letter-spacing:.06em;
   cursor:pointer;transition:border-color .2s,color .2s;
 }
-#lang-btn:hover{border-color:var(--teal);color:var(--teal);}
+#lang-btn:hover{border-color:var(--blue);color:var(--blue);}
+
+/* PREPRINT CARD */
+.preprint-card{
+  background:var(--navy2);
+  border:1px solid var(--border2);
+  border-left:3px solid var(--blue);
+  border-radius:4px;
+  padding:24px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.preprint-info .label{
+  font-family:'DM Mono',monospace;
+  font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--blue);margin-bottom:8px;
+}
+.preprint-info .title{
+  font-size:1rem;font-weight:400;color:var(--text);margin-bottom:4px;
+}
+.preprint-info .meta{
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;color:var(--dim);
+}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 18px;border-radius:3px;
+  text-decoration:none;transition:all .2s;white-space:nowrap;
+}
+.btn-blue{
+  background:transparent;color:var(--blue);
+  border:1px solid rgba(96,165,250,.35);
+}
+.btn-blue:hover{background:rgba(96,165,250,.1);border-color:var(--blue);}
+.btn-outline{
+  background:transparent;color:var(--muted);
+  border:1px solid var(--border2);
+}
+.btn-outline:hover{border-color:var(--muted);color:var(--text);}
+
+/* EXPERIMENT CATEGORIES */
+.exp-categories{display:flex;flex-direction:column;gap:1px;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+
+.exp-cat{
+  background:var(--navy2);
+  padding:0;
+}
+.exp-cat-header{
+  padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.exp-cat-title{
+  display:flex;align-items:center;gap:12px;
+}
+.exp-cat-dot{
+  width:8px;height:8px;border-radius:50%;
+  flex-shrink:0;
+}
+.exp-cat h3{
+  font-size:.95rem;font-weight:400;color:var(--text);
+}
+.exp-cat .cat-meta{
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;color:var(--dim);
+}
+.exp-cat.coming .exp-cat-title h3{color:var(--dim);}
+
+/* experiment items inside category */
+.exp-items{
+  border-top:1px solid var(--border);
+  background:var(--navy);
+}
+.exp-item{
+  display:flex;align-items:center;gap:16px;
+  padding:14px 24px 14px 44px;
+  text-decoration:none;
+  border-bottom:1px solid var(--border);
+  transition:background .2s;
+}
+.exp-item:last-child{border-bottom:none;}
+.exp-item:hover{background:var(--navy3);}
+.exp-item .exp-name{
+  font-size:.88rem;color:var(--text);flex:1;
+}
+.exp-item .exp-sessions{
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;color:var(--blue);
+  border:1px solid rgba(96,165,250,.25);
+  padding:2px 9px;border-radius:2px;
+}
+.exp-item .exp-date{
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;color:var(--dim);
+  white-space:nowrap;
+}
+.coming-note{
+  padding:14px 24px 14px 44px;
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;color:var(--dim);
+  font-style:italic;
+}
 
 /* FOOTER */
 footer{
@@ -192,83 +238,100 @@ footer p{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--dim);}
   <a class="back" href="https://kaofriz.github.io">← kaofriz.github.io</a>
   <div class="nav-right">
     <a href="../axi/">AXI</a>
-    <a href="../axes/">AXES</a>
-    <button id="lang-btn" onclick="toggleLang()">EN</button>
+    <a href="../axe-l/">AXE-L</a>
+    <button id="lang-btn" onclick="toggleLang()">JA</button>
   </div>
 </div>
 
 <div class="hero">
-  <div class="hero-label">Lifelong Learning</div>
-  <h1>AXE-L<br><em>Axes of Learning</em></h1>
-  <p class="tagline">
-    <span class="ja">AXIの原則を学習に応用した、学習者中心の自律的生涯学習フレームワーク。既存の専門・制度的教育を補完するものとして位置づけられる。あらゆる関心領域を学習の軸として蓄積し、軸と軸の接続によって認識が深まるという多軸的学習観に基づく。画一的な評価基準ではなく、学習者自身の関心と達成感がドライブになる。</span>
-    <span class="en">A learner-centred, self-directed framework for lifelong learning, derived from AXI principles. Designed to complement existing formal and specialist education. Based on a multi-axial view of learning in which knowledge accumulates as axes across any domain of interest, and understanding deepens through the connections between them. Driven not by standardised assessment, but by the learner's own curiosity and sense of achievement.</span>
-  </p>
+  <div class="hero-label">Protocol</div>
+  <h1>AXES<br><em>Axes of Epistemic System</em></h1>
+  <p class="tagline"><span class="en">A shared protocol for making epistemic coordinates visible, comparable, and negotiable — across humans, between humans and AI, and between AI systems.</span><span class="ja">人間同士、人間とAIの間、AIシステム間で認識座標を可視化・比較・交渉可能にするための共有プロトコル。</span></p>
 </div>
 
 <div class="content">
 
-  <!-- RELATED THEORIES -->
+  <!-- PREPRINT -->
   <div class="sec">
-    <div class="sec-label"><span class="ja">関連概念</span><span class="en">Related Concepts</span></div>
-    <h2><span class="ja">関連する学習理論・概念</span><span class="en">Related Learning Theories & Concepts</span></h2>
-    <div class="tag-wrap">
-      <span class="tag">Transformative Learning</span>
-      <span class="tag">Heutagogy</span>
-      <span class="tag">Portfolio-based Learning</span>
-      <span class="tag">Interdisciplinary Learning</span>
-      <span class="tag">Reflective Practice</span>
-      <span class="tag">Task-based Learning</span>
-      <span class="tag">PPLT</span>
-      <span class="tag">Gamification</span>
+    <div class="sec-label"><span class="en">Publication</span><span class="ja">出版物</span></div>
+    <h2><span class="en">Position Paper</span><span class="ja">ポジションペーパー</span></h2>
+    <div class="preprint-card">
+      <div class="preprint-info">
+        <div class="label">Preprint · Zenodo</div>
+        <div class="title">AXES: Axes of Epistemic System</div>
+        <div class="meta">Draft v0.6 · 2026.03.28 · DOI: 10.5281/zenodo.19264332</div>
+      </div>
+      <a class="btn btn-blue" href="https://zenodo.org/records/19264332" target="_blank"><span class="en">Read ↗</span><span class="ja">読む ↗</span></a>
     </div>
   </div>
 
   <hr>
 
-  <!-- PRACTICE IDEAS -->
+  <!-- EXPERIMENTS -->
   <div class="sec">
-    <div class="sec-label"><span class="ja">実践アイデア</span><span class="en">Practice Ideas</span></div>
-    <h2><span class="ja">実践アイデア</span><span class="en">Practice Ideas</span></h2>
-    <div class="practice-list">
-      <div class="practice-item">
-        <h4><span class="ja">AI対話リフレクション</span><span class="en">AI Dialogue Reflection</span></h4>
-        <p><span class="ja">AIとの対話を通じた思考の外在化と深化。対話ログが学習記録として機能する。</span><span class="en">Externalising and deepening thought through dialogue with AI. Interaction logs function as a learning record.</span></p>
-      </div>
-      <div class="practice-item">
-        <h4><span class="ja">Creative writing を通した思考実験</span><span class="en">Thought Experiment through Creative Writing</span></h4>
-        <p><span class="ja">創作実践を認識論的探求の手段として位置づける。書くことが知識獲得を駆動する逆転モデル。</span><span class="en">Positioning creative practice as a mode of epistemological inquiry. A reversed model in which writing drives knowledge acquisition.</span></p>
-      </div>
-      <div class="practice-item">
-        <h4>Dodo <span class="ja">スマートフォンアプリ</span><span class="en">Smartphone App</span> <span class="status-badge"><span class="ja">開発中</span><span class="en">In development</span></span></h4>
-        <p><span class="ja">日本語学習を起点としたAXE-Lの実装例。カメラによる物体認識・発音練習・語彙蓄積を統合。</span><span class="en">An implementation of AXE-L grounded in Japanese language learning. Integrates camera-based object recognition, pronunciation practice, and vocabulary accumulation.</span></p>
-      </div>
-    </div>
-  </div>
+    <div class="sec-label"><span class="en">Experiments</span><span class="ja">実験</span></div>
+    <h2><span class="en">AXES in Practice</span><span class="ja">AXESの実践</span></h2>
+    <p><span class="en">AXES proposes that epistemic coordinate divergence is measurable across three layers of communication. The experiments below apply the protocol to each layer, making coordinate differences visible and comparable.</span><span class="ja">AXESは、コミュニケーションの3つの層にわたって認識座標の乖離が測定可能であると提案する。以下の実験は各層にプロトコルを適用し、座標の差異を可視化・比較可能にする。</span></p>
 
-  <hr>
+    <div class="exp-categories" style="margin-top:28px;">
+      <div class="exp-cat">
+        <div class="exp-cat-header">
+          <div class="exp-cat-title">
+            <div class="exp-cat-dot" style="background:#60a5fa;"></div>
+            <h3>AI Cross-Model</h3>
+          </div>
+          <span class="cat-meta">1 <span class="en">experiment</span><span class="ja">実験</span></span>
+        </div>
+        <div class="exp-items">
+          <a class="exp-item" href="./shogyomujo/">
+            <span class="exp-name">諸行無常 / Impermanence</span>
+            <span class="exp-sessions">3 sessions</span>
+            <span class="exp-date">2026/3/31 — 4/1</span>
+          </a>
+        </div>
+      </div>
 
-  <!-- PORTFOLIO -->
-  <div class="sec">
-    <div class="sec-label"><span class="ja">ポートフォリオ構想</span><span class="en">Portfolio Vision</span></div>
-    <h2><span class="ja">ポートフォリオ構想</span><span class="en">Portfolio Vision</span></h2>
-    <div class="portfolio-card">
-      <h4><span class="ja">曼陀羅マップ</span><span class="en">Mandala Map</span> <span class="status-badge"><span class="ja">構想中</span><span class="en">Concept stage</span></span></h4>
-      <p><span class="ja">学習者を中心に置き、蓄積された学習の軸をバブルとして多軸的に可視化するポートフォリオ。各軸の接続がスパークを生む。Gamificationによる継続的達成感の設計を組み込む。</span><span class="en">A portfolio that places the learner at its centre, visualising accumulated learning axes as expanding bubbles. Connections between axes generate new insight. Incorporates gamification for sustained sense of achievement.</span></p>
+      <div class="exp-cat coming">
+        <div class="exp-cat-header">
+          <div class="exp-cat-title">
+            <div class="exp-cat-dot" style="background:var(--dim);"></div>
+            <h3>Human — AI</h3>
+          </div>
+          <span class="cat-meta"><span class="en">coming</span><span class="ja">準備中</span></span>
+        </div>
+        <div class="exp-items">
+          <div class="coming-note"><span class="en">Experiments in preparation</span><span class="ja">実験準備中</span></div>
+        </div>
+      </div>
+
+      <div class="exp-cat coming">
+        <div class="exp-cat-header">
+          <div class="exp-cat-title">
+            <div class="exp-cat-dot" style="background:var(--dim);"></div>
+            <h3>Human — Human</h3>
+          </div>
+          <span class="cat-meta"><span class="en">coming</span><span class="ja">準備中</span></span>
+        </div>
+        <div class="exp-items">
+          <div class="coming-note"><span class="en">Experiments in preparation</span><span class="ja">実験準備中</span></div>
+        </div>
+      </div>
     </div>
   </div>
 
 </div>
 
 <footer>
-  <p>AXE-L · kaofriz.github.io · 2026</p>
+  <p>AXES · kaofriz.github.io · 2026</p>
 </footer>
-
 <script>
+let currentLang = 'en';
 function toggleLang() {
-  const isEn = document.body.classList.toggle('en-mode');
-  document.getElementById('lang-btn').textContent = isEn ? 'JA' : 'EN';
+  currentLang = currentLang === 'en' ? 'ja' : 'en';
+  document.body.classList.toggle('en-mode', currentLang === 'en');
+  document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'JA' : 'EN';
 }
+document.body.classList.add('en-mode');
 </script>
 </body>
 </html>

@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AXES Cross-Model Experiment — 諸行無常 / Impermanence [Zenodo edition]</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #ffffff;
+      --surface:   #f4f6fa;
+      --border:    #d0d4de;
+      --border2:   #b8bece;
+      --text:      #222222;
+      --muted:     #555566;
+      --dim:       #777788;
+      --accent:    #2E5B8A;
+      --openai:    #1466cc;
+      --gemini:    #0e8f4e;
+      --claude:    #b84d15;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", "Segoe UI", sans-serif;
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    /* ── LANG TOGGLE ── */
+    .en { display: none; }
+    body.en-mode .ja { display: none; }
+    body.en-mode .en { display: revert; }
+
+    /* ── TOP BAR ── */
+    #topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.96); backdrop-filter: blur(12px); box-shadow: 0 1px 4px rgba(0,0,0,.08);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 52px;
+    }
+    #topbar nav { display: flex; gap: 24px; }
+    #topbar nav a {
+      font-size: .75rem; letter-spacing: .08em; color: var(--dim);
+      text-decoration: none; text-transform: uppercase;
+      transition: color .2s;
+    }
+    #topbar nav a:hover { color: #111111; }
+    #lang-btn {
+      padding: 6px 16px; border-radius: 20px;
+      border: 1px solid var(--border2);
+      background: transparent; color: var(--text);
+      font-size: .78rem; letter-spacing: .06em;
+      cursor: pointer; transition: border-color .2s, color .2s;
+    }
+    #lang-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 900px; margin: 0 auto; padding: 64px 28px 120px; }
+
+    /* ── HERO ── */
+    .hero { text-align: center; padding: 72px 0 64px; border-bottom: 1px solid var(--border); margin-bottom: 72px; }
+    .hero .label {
+      display: inline-block;
+      font-size: .7rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--muted); border: 1px solid var(--border2);
+      padding: 5px 14px; border-radius: 20px; margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: clamp(1.5rem, 4vw, 2.6rem);
+      letter-spacing: .06em; color: #111111;
+      line-height: 1.3; margin-bottom: 12px;
+    }
+    .hero h1 em { font-style: normal; color: var(--muted); }
+    .hero .sub { font-size: .88rem; color: var(--muted); margin-top: 20px; }
+    .hero .meta { font-size: .78rem; color: var(--dim); margin-top: 8px; }
+
+    /* ── SECTION ── */
+    section { margin-bottom: 80px; }
+    section:target { scroll-margin-top: 70px; }
+    .sec-label {
+      font-size: .68rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 10px;
+    }
+    .sec-title {
+      font-size: 1.35rem; color: #111111;
+      letter-spacing: .04em; margin-bottom: 32px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px;
+    }
+    .card + .card { margin-top: 16px; }
+
+    /* ── DESIGN TABLE ── */
+    .design-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    @media (max-width: 600px) { .design-grid { grid-template-columns: 1fr; } }
+    .design-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .design-item h4 { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+    .design-item p  { font-size: .86rem; color: #444444; }
+    .axes-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    .axes-table th { background: #2E5B8A; color: #ffffff; font-weight: 600; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; padding: 8px 12px; border-bottom: none; text-align: left; }
+    .axes-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+    .axes-table tr:last-child td { border: none; }
+    .axes-table td:first-child { color: var(--muted); font-size: .78rem; width: 36px; }
+    .axes-table td:nth-child(2) { color: #333333; }
+    .axes-table td:nth-child(3),
+    .axes-table td:nth-child(4) { color: var(--dim); font-size: .78rem; }
+    .model-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+    .chip {
+      padding: 5px 14px; border-radius: 20px; font-size: .78rem;
+      border: 1px solid; display: inline-block;
+    }
+
+    /* ── RADAR ── */
+    .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 28px; }
+
+    /* ── SCORE BARS ── */
+    .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap: 16px; }
+    .score-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .score-card h3 { font-size: .82rem; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+    .bar-label { font-size: .72rem; color: var(--muted); width: 108px; flex-shrink: 0; line-height: 1.3; }
+    .bar-bg { flex: 1; height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; }
+    .bar-num  { font-size: .78rem; color: #555; width: 26px; text-align: right; }
+    .total-row { display: flex; justify-content: flex-end; gap: 5px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); font-size: .76rem; color: var(--dim); }
+    .total-row strong { font-size: .92rem; color: var(--text); }
+
+    /* ── SCORE COMPARE TABLE ── */
+    .cmp-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: 24px; }
+    .cmp-table th { padding: 8px 14px; background: #2E5B8A; color: #ffffff; font-weight: 600; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; border-bottom: none; }
+    .cmp-table th:first-child { text-align: left; }
+    .cmp-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); text-align: center; }
+    .cmp-table td:first-child { text-align: left; color: #444; font-size: .82rem; }
+    .cmp-table tr:last-child td { font-weight: bold; color: #111; background: #eef2f8; border-top: 1px solid var(--border2); border-bottom: none; }
+    .cmp-table .hi { color: #1a3a6a; font-weight: bold; }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 0; }
+    .tab-btn {
+      padding: 8px 18px; border-radius: 8px 8px 0 0;
+      border: 1px solid var(--border); border-bottom: none;
+      background: var(--bg); color: var(--dim);
+      font-size: .78rem; cursor: pointer;
+      letter-spacing: .04em; transition: background .15s, color .15s;
+    }
+    .tab-btn.active { background: var(--surface); color: var(--text); }
+    .tab-panels { background: var(--surface); border: 1px solid var(--border); border-radius: 0 12px 12px 12px; padding: 28px 30px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .prose { font-size: .86rem; color: #333333; white-space: pre-wrap; line-height: 1.85; }
+    .prose strong { color: #111111; }
+
+    /* ── PHASE 3 ── */
+    .p3-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 18px; }
+    .p3-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+    .p3-card h3 { font-size: .82rem; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .q-label { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin: 16px 0 6px; }
+    .q-label:first-of-type { margin-top: 0; }
+    .q-body { font-size: .84rem; color: #444444; line-height: 1.8; }
+    .q-body strong { color: #111111; }
+
+    /* ── META INSIGHT ── */
+    .insight {
+      background: #edf2f8; border: 1px solid #2E5B8A;
+      border-radius: 16px; padding: 36px 40px; margin-top: 28px;
+    }
+    .insight .badge {
+      font-size: .68rem; letter-spacing: .16em; text-transform: uppercase;
+      color: #2E5B8A; border: 1px solid #2E5B8A; padding: 4px 12px;
+      border-radius: 20px; display: inline-block; margin-bottom: 18px;
+    }
+    .insight h3 { font-size: 1.1rem; color: #1a2f5a; margin-bottom: 18px; line-height: 1.4; }
+    .insight p  { font-size: .88rem; color: #444444; line-height: 1.9; margin-bottom: 12px; }
+    .insight p:last-child { margin-bottom: 0; }
+    .insight strong { color: #1a2f5a; }
+    .insight em { color: #2E5B8A; font-style: normal; }
+    .meta-table { width: 100%; border-collapse: collapse; font-size: .82rem; margin: 20px 0; }
+    .meta-table th { background: #2E5B8A; color: #ffffff; font-weight: 600; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; padding: 7px 14px; border-bottom: none; }
+    .meta-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); }
+    .meta-table td:first-child { color: var(--muted); font-size: .78rem; }
+    .meta-table td:nth-child(2) { color: #444; }
+
+    /* ── DISCUSSION ── */
+    .discussion p { font-size: .88rem; color: #444444; margin-bottom: 16px; line-height: 1.9; }
+    .discussion strong { color: #111111; }
+    .discussion h4 { font-size: .88rem; color: #222222; font-weight: bold; margin: 24px 0 8px; }
+
+    /* ── DIFF TABLE ── */
+    .diff-tbl { width: 100%; border-collapse: collapse; font-size: .82rem; margin: 16px 0; }
+    .diff-tbl th { background: #2E5B8A; color: #ffffff; font-weight: 600; text-align: left; padding: 6px 12px; border-bottom: none; }
+    .diff-tbl td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: #444444; }
+    .diff-tbl tr:last-child td { border: none; }
+
+    /* ── FOOTER ── */
+    footer { text-align: center; padding: 40px 0 60px; font-size: .75rem; color: var(--dim); border-top: 1px solid var(--border); }
+    footer a { color: var(--dim); text-decoration: none; }
+
+    /* ── UTIL ── */
+    .mt8 { margin-top: 8px; }
+    .mt16 { margin-top: 16px; }
+    .mt24 { margin-top: 24px; }
+
+    /* ── SESSION SELECTOR ── */
+    .session-bar {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; flex-wrap: wrap;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 24px; margin-bottom: 56px;
+    }
+    .session-bar .s-label {
+      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--dim); margin-right: 6px;
+    }
+    .session-btn {
+      padding: 7px 18px; border-radius: 20px;
+      border: 1px solid var(--border2);
+      background: transparent; color: var(--dim);
+      font-size: .78rem; cursor: pointer; transition: all .18s;
+    }
+    .session-btn.active {
+      background: var(--accent); color: #fff;
+      border-color: var(--accent);
+    }
+    .session-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+    .session-meta { font-size: .72rem; color: var(--dim); margin-left: 10px; }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <nav>
+    <a href="#design"><span class="ja">実験設計</span><span class="en">Design</span></a>
+    <a href="#phase1">Phase 1</a>
+    <a href="#phase2">Phase 2</a>
+    <a href="#phase3">Phase 3</a>
+    <a href="#insight">Meta-Insight</a>
+    <a href="#discussion"><span class="ja">考察</span><span class="en">Discussion</span></a>
+    <a href="#observation"><span class="ja">横断観察</span><span class="en">Observation</span></a>
+  </nav>
+  <button id="lang-btn" onclick="toggleLang()">EN</button>
+</div>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="label">AXES Cross-Model Experiment</div>
+    <h1>
+      <span class="ja">「諸行無常」<em>の多視点分析</em></span>
+      <span class="en">Multi-Model Analysis of <em>Impermanence</em></span>
+    </h1>
+    <p class="sub">
+      <span class="ja">OpenAI gpt-4o ・ Gemini 2.5 flash ・ Claude sonnet-4-6</span>
+      <span class="en">OpenAI gpt-4o &nbsp;·&nbsp; Gemini 2.5 flash &nbsp;·&nbsp; Claude sonnet-4-6</span>
+    </p>
+    <p class="meta">
+      Kaori Frizelle &nbsp;·&nbsp; Independent Researcher &nbsp;·&nbsp;
+      <span class="ja">2026年3月31日</span><span class="en">March 31, 2026</span>
+    </p>
+  </div>
+
+  <!-- SESSION SELECTOR -->
+  <div class="session-bar">
+    <span class="s-label"><span class="ja">実験回</span><span class="en">Session</span></span>
+    <button class="session-btn active" onclick="setSession(0)">
+      <span class="ja">第1回 — 2026/3/31</span><span class="en">Session 1 — 2026/3/31</span>
+    </button>
+    <button class="session-btn" onclick="setSession(1)">
+      <span class="ja">第2回 — 2026/4/1 午前</span><span class="en">Session 2 — 2026/4/1 AM</span>
+    </button>
+    <button class="session-btn" onclick="setSession(2)">
+      <span class="ja">第3回 — 2026/4/1 午後</span><span class="en">Session 3 — 2026/4/1 PM</span>
+    </button>
+    <span class="session-meta ja" id="sessionMeta">Gemini 満点優勢回</span>
+    <span class="session-meta en" id="sessionMetaEn">Gemini high-score session</span>
+    <button class="session-btn" onclick="setObservation()" id="obsBtn" style="margin-left:8px;border-color:var(--accent)44;color:var(--accent);">
+      <span class="ja">横断観察</span><span class="en">Cross-session</span>
+    </button>
+  </div>
+
+  <!-- main experiment content wrapper -->
+  <div id="mainContent">
+  <section id="design">
+    <div class="sec-label">Section 00</div>
+    <h2 class="sec-title">
+      <span class="ja">実験設計</span>
+      <span class="en">Experimental Design</span>
+    </h2>
+
+    <div class="design-grid">
+      <div class="design-item">
+        <h4><span class="ja">分析対象</span><span class="en">Concept</span></h4>
+        <p>
+          <strong>諸行無常 / Impermanence</strong><br>
+          <span class="ja">仏教三法印のひとつ。「あらゆる現象（諸行）は常に変化し、永続するものは何もない」という存在論的命題。</span>
+          <span class="en">One of the Three Marks of Existence in Buddhism. The ontological proposition that "all conditioned phenomena are impermanent and subject to constant change."</span>
+        </p>
+      </div>
+      <div class="design-item">
+        <h4><span class="ja">使用モデル</span><span class="en">Models</span></h4>
+        <div class="model-chips mt8">
+          <span class="chip" style="color:var(--openai);border-color:var(--openai)44">OpenAI gpt-4o</span>
+          <span class="chip" style="color:var(--gemini);border-color:var(--gemini)44">Gemini 2.5 flash</span>
+          <span class="chip" style="color:var(--claude);border-color:var(--claude)44">Claude sonnet-4-6</span>
+        </div>
+      </div>
+      <div class="design-item">
+        <h4><span class="ja">手順</span><span class="en">Protocol</span></h4>
+        <p>
+          <span class="ja">Phase 1：各モデルが独立して8軸スコアリング。Phase 2：自己解説（特に差異が出た軸について）。Phase 3：他モデルの解説を読んだ上でのクロスリフレクション。</span>
+          <span class="en">Phase 1: Each model independently scores on 8 axes. Phase 2: Self-explanation focusing on divergent axes. Phase 3: Cross-model reflection after reading other models' explanations.</span>
+        </p>
+      </div>
+      <div class="design-item">
+        <h4><span class="ja">評価スケール</span><span class="en">Scale</span></h4>
+        <p>
+          <span class="ja">各軸0〜10の整数スコア。合計最大80点。モデルへの指示は同一プロンプト、温度パラメータ0.3（Phase 1）〜0.6（Phase 3）。</span>
+          <span class="en">Integer scores 0–10 per axis, 80 points total. Identical prompts across models; temperature 0.3 (Phase 1) to 0.6 (Phase 3).</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:16px;">
+        <span class="ja">AXES 8軸定義</span><span class="en">AXES — 8 Axis Definitions</span>
+      </h4>
+      <table class="axes-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th><span class="ja">軸名</span><span class="en">Axis</span></th>
+            <th><span class="ja">0端</span><span class="en">Pole 0</span></th>
+            <th><span class="ja">10端</span><span class="en">Pole 10</span></th>
+          </tr>
+        </thead>
+        <tbody id="axesTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════ -->
+  <!-- PHASE 1                          -->
+  <!-- ════════════════════════════════ -->
+  <section id="phase1">
+    <div class="sec-label">Phase 01</div>
+    <h2 class="sec-title">
+      <span class="ja">AXES座標スコアリング</span>
+      <span class="en">AXES Coordinate Scoring</span>
+    </h2>
+
+    <div class="chart-wrap">
+      <canvas id="radarChart"></canvas>
+    </div>
+
+    <div class="score-grid" id="scoreGrid"></div>
+
+    <table class="cmp-table mt24">
+      <thead id="cmpHead"></thead>
+      <tbody id="cmpBody"></tbody>
+    </table>
+  </section>
+
+  <!-- phase1-only notice (shown for sessions 2 & 3) -->
+  <div id="phase1OnlyNotice" style="display:none;">
+    <div class="card" style="margin-bottom:48px;text-align:center;padding:32px;">
+      <p style="font-size:.88rem;color:var(--muted);">
+        <span class="ja">このセッションはPhase 1（スコアリング）のみ記録。Phase 2・3は第1回セッションを参照。</span>
+        <span class="en">This session records Phase 1 (scoring) only. For Phase 2 and 3, refer to Session 1.</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Phase 2 onwards — Session 1 only -->
+  <div id="phase2plus">
+
+  <!-- ════════════════════════════════ -->
+  <!-- PHASE 2                          -->
+  <!-- ════════════════════════════════ -->
+  <section id="phase2">
+    <div class="sec-label">Phase 02</div>
+    <h2 class="sec-title">
+      <span class="ja">自己解説 — スコアの背景にある解釈</span>
+      <span class="en">Self-Explanation — Reasoning Behind the Scores</span>
+    </h2>
+    <p style="font-size:.84rem;color:var(--muted);margin-bottom:24px;">
+      <span class="ja">各モデルは自分がつけたスコアの理由を説明し、特に他モデルと差が出た「感情的強度」と「時制志向」について詳しく解説した。</span>
+      <span class="en">Each model explained its scoring rationale, with particular focus on the two axes showing the greatest divergence: <em>Emotional Intensity</em> and <em>Temporal Orientation</em>.</span>
+    </p>
+    <div class="tabs" id="p2tabs"></div>
+    <div class="tab-panels" id="p2panels"></div>
+  </section>
+
+  <!-- ════════════════════════════════ -->
+  <!-- PHASE 3                          -->
+  <!-- ════════════════════════════════ -->
+  <section id="phase3">
+    <div class="sec-label">Phase 03</div>
+    <h2 class="sec-title">
+      <span class="ja">クロスリフレクション</span>
+      <span class="en">Cross-Model Reflection</span>
+    </h2>
+    <p style="font-size:.84rem;color:var(--muted);margin-bottom:24px;">
+      <span class="ja">各モデルが他の2モデルの自己解説を読んだ上で、4つの問いに答えた。</span>
+      <span class="en">Each model read the other two models' Phase 2 self-explanations, then responded to four reflective questions.</span>
+    </p>
+    <div class="p3-grid" id="p3grid"></div>
+  </section>
+
+  <!-- ════════════════════════════════ -->
+  <!-- META INSIGHT                     -->
+  <!-- ════════════════════════════════ -->
+  <section id="insight">
+    <div class="sec-label">Meta-Insight</div>
+    <h2 class="sec-title">
+      <span class="ja">3モデルを横断して浮かび上がるもの</span>
+      <span class="en">What Emerges Across All Three Models</span>
+    </h2>
+
+    <div class="insight">
+      <div class="badge">Convergent Finding</div>
+      <h3>
+        <span class="ja">3モデルの分析から浮かび上がる収束的発見</span>
+        <span class="en">"A convergent finding emerged independently from all three models."</span>
+      </h3>
+      <p>
+        <span class="ja">3モデルが独立して辿り着いた最も重要な観察は、<strong>評価スコアの差が概念の解釈の違いではなく、「何を測定するか」という設定の違い</strong>に起因するという点だ。これはOpenAI・Gemini・Claudeが相互に独立して提起した問いである。</span>
+        <span class="en">The most significant finding—reached independently by all three models—is that <strong>score divergences stemmed not from differing interpretations of the concept, but from differing definitions of what was being measured.</strong> OpenAI, Gemini, and Claude each surfaced this question from their own angle.</span>
+      </p>
+
+      <table class="meta-table">
+        <thead>
+          <tr>
+            <th><span class="ja">モデル</span><span class="en">Model</span></th>
+            <th><span class="ja">測定の重心</span><span class="en">Measurement Focus</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--openai)">OpenAI gpt-4o</td>
+            <td><span class="ja">命題の論理的内容・哲学的中立性</span><span class="en">Logical content of the proposition; philosophical neutrality</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--gemini)">Gemini 2.5 flash</td>
+            <td><span class="ja">概念が人間に与える影響・文化的受容の深さ</span><span class="en">Human impact of the concept; depth of cultural reception</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--claude)">Claude sonnet-4-6</td>
+            <td><span class="ja">概念の構造的両義性・軸間の差異プロファイル</span><span class="en">Structural ambiguity; differentiated axis profile</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        <span class="ja">この三様の反応は、「諸行無常」が仏教で示す論点——<em>観察者が現象に固定された実体を見出そうとするが、実体は観察者にも現象にもない</em>——をメタなレベルで再演している。この発見は3モデルの独立した分析を重ねることで初めて見えてきたものだ。</span>
+        <span class="en">These three distinct responses re-enact the very insight of impermanence in Buddhism: <em>the observer seeks a fixed essence in the phenomenon, yet no such essence exists in the observer or in the phenomenon.</em> This insight only becomes visible when the three independent analyses are placed side by side.</span>
+      </p>
+      <p>
+        <span class="ja"><strong>「諸行無常をどう評価するか」という問い自体が、評価という行為の無常性と構築性を照らし出す。</strong>OpenAIの中立的処理・Geminiの人間的影響の重視・Claudeの構造的分析——この三様の寄与が互いを照らし合うことで、一つのモデルだけでは到達できない理解の奥行きが生まれた。</span>
+        <span class="en"><strong>The act of evaluating impermanence itself illuminates the impermanence and constructedness of evaluation.</strong> OpenAI's neutral processing, Gemini's emphasis on human impact, and Claude's structural analysis each illuminate the others — producing a depth of understanding unreachable by any single model alone.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════ -->
+  <!-- DISCUSSION                       -->
+  <!-- ════════════════════════════════ -->
+  <section id="discussion">
+    <div class="sec-label">Discussion</div>
+    <h2 class="sec-title">
+      <span class="ja">考察</span>
+      <span class="en">Discussion</span>
+    </h2>
+
+    <div class="discussion">
+
+      <h4><span class="ja">① スコア差の読み方：Geminiの満点について</span><span class="en">① Reading the Score Divergences: On Gemini's Perfect Scores</span></h4>
+      <p>
+        <span class="ja">Geminiが6軸で満点（10/10）を与えたことは、<strong>「普遍的真理には最高スコアが妥当」という方法論的立場</strong>の表れだ。一方でOpenAIとClaudeは軸間の差異プロファイルを重視し、満点を避けた。これはAXES分析における「何を測定するか」という根本的な立場の違いであり、どちらが正しいというわけではなく、3モデルの測定哲学の差として読むべきだ。</span>
+        <span class="en">Gemini's six perfect scores reflect a <strong>methodological stance: maximum scores are appropriate for universal truths.</strong> OpenAI and Claude, by contrast, prioritized differentiation across axes and avoided perfect scores. This is a fundamental difference in measurement philosophy — not a question of correctness, but a meaningful divergence in how each model understands the purpose of AXES analysis.</span>
+      </p>
+
+      <h4><span class="ja">② 「感情的強度」軸の三層解釈</span><span class="en">② Three-Layer Interpretation of "Emotional Intensity"</span></h4>
+      <table class="diff-tbl">
+        <thead>
+          <tr>
+            <th><span class="ja">モデル</span><span class="en">Model</span></th>
+            <th><span class="ja">スコア</span><span class="en">Score</span></th>
+            <th><span class="ja">何を測ったか</span><span class="en">What Was Measured</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--openai)">OpenAI</td><td>5</td>
+            <td><span class="ja">命題の感情的中立性（「変化する」という事実に感情的荷重はない）</span><span class="en">Emotional neutrality of the proposition ("change" as a fact carries no emotional charge)</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--claude)">Claude</td><td>6</td>
+            <td><span class="ja">喚起と鎮静の二重機能の平均（感情を引き起こしつつ超克も促す）</span><span class="en">Average of dual function — evokes emotion while simultaneously promoting transcendence</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--gemini)">Gemini</td><td>8</td>
+            <td><span class="ja">文化的・文学的受容における感情的荷重（もののあわれ、平家物語等）</span><span class="en">Emotional weight in cultural/literary reception (mono no aware, The Tale of the Heike, etc.)</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4><span class="ja">③ Phase 3で生まれた新問い</span><span class="en">③ New Questions Emerging from Phase 3</span></h4>
+      <p>
+        <span class="ja">Phase 3では各モデルから独自の問いが生まれた。Claudeは「<strong>諸行無常は動機を与えるのか、動機の前提を崩すのか</strong>」と問い、涅槃への志向が世俗的動機付けとは別次元にあることを指摘した。Geminiは「感情的強度を概念の性質として測るか、受け手への影響として測るか」という測定対象の定義問題を提起した。OpenAIは「時制志向は超時制的命題として中立に扱うべき」という立場を明示した。これら3つの問いはいずれも、AXES軸定義の曖昧さを別の角度から照らしている。</span>
+        <span class="en">Phase 3 generated original questions from each model. Claude asked: <strong>"Does impermanence provide motivation, or dissolve its preconditions?"</strong> — noting that nirvana-oriented drives differ from worldly motivation. Gemini raised the question of whether emotional intensity should be measured as a property of the concept or as its effect on recipients. OpenAI articulated a stance of treating supra-temporal propositions as neutral with respect to tense. All three questions illuminate ambiguities in the AXES axis definitions from different angles.</span>
+      </p>
+
+      <h4><span class="ja">④ 本実験の限界と可能性</span><span class="en">④ Limitations and Possibilities</span></h4>
+      <p>
+        <span class="ja">各モデルは単一のプロンプトに基づいて評価しており、仏教学・哲学の専門的知見を持つわけではない。また「諸行無常」という語の文化的含意（日本語圏における共鳴）が、各モデルの学習データの分布によって異なる可能性がある。一方で、<strong>3つの独立した大規模言語モデルが同一概念を評価し・自己説明し・他者の説明に応答するという3段構造が、それぞれの認識論的傾向を浮かびあがらせる</strong>という本実験の構造は、LLMの「知的個性」を可視化する手法としての可能性を示している。OpenAI・Gemini・Claudeの3者は本実験において互いを照らし合う鏡として機能した。</span>
+        <span class="en">Each model evaluated based on a single prompt and does not hold specialist knowledge in Buddhist studies or philosophy. Cultural resonances of the Japanese term 諸行無常 may also vary by training data. That said, <strong>the three-stage structure — independent scoring, self-explanation, and cross-model response — surfaces each model's epistemic tendencies with notable clarity,</strong> suggesting AXES-style prompting as a viable method for visualizing LLM "intellectual personality." In this experiment, OpenAI, Gemini, and Claude functioned as mirrors illuminating each other.</span>
+      </p>
+
+    </div>
+  </section>
+
+  </div><!-- /#phase2plus -->
+
+</div><!-- /#mainContent -->
+
+<!-- OBSERVATION CONTENT (hidden by default) -->
+<div id="observationContent" style="display:none;">
+  <section id="observation">
+    <div class="sec-label">Multi-Session Observation</div>
+    <h2 class="sec-title">
+      <span class="ja">3回実験の横断観察：モデルの認識論的個性</span>
+      <span class="en">Cross-Session Observation: Epistemic Personality of Each Model</span>
+    </h2>
+
+    <div class="discussion">
+      <p>
+        <span class="ja">同一概念・同一プロンプトを3回にわたって実行した結果、各モデルに異なる応答パターンが現れた。以下はスコアの変動に基づく事実観察であり、良し悪しの評価ではなく、認識論的個性の記述である。</span>
+        <span class="en">Running the same concept and prompt three times revealed distinct response patterns across models. The following observations are based on score variance — descriptions of epistemic personality, not evaluations of quality.</span>
+      </p>
+    </div>
+
+    <!-- personality cards -->
+    <div class="p3-grid" style="margin-bottom:32px;">
+      <div class="p3-card">
+        <h3 style="color:var(--openai)">OpenAI (gpt-4o) — <span class="ja">微調整型</span><span class="en">Fine-tuned</span></h3>
+        <div class="q-label"><span class="ja">観察</span><span class="en">Observation</span></div>
+        <div class="q-body">
+          <span class="ja">3回を通じて応答は概ね安定しているが、回ごとに小さな調整が見られる。「抽象度10」を唯一の突出点として一貫して保ちながら、他の軸は慎重に差異をつける。哲学的中立性を重視する傾向がある。</span>
+          <span class="en">Responses remain broadly stable across sessions, with small adjustments per run. The sole consistent outlier is Abstraction at 10; other axes are scored with deliberate differentiation. A tendency toward philosophical neutrality is observed.</span>
+        </div>
+        <div class="q-label"><span class="ja">変動が最も大きい軸</span><span class="en">Highest variance axis</span></div>
+        <div class="q-body"><span class="ja">地理的文化的スコープ（8→9→9）、感情的強度（5→5→4）</span><span class="en">Geo-cultural scope (8→9→9), Emotional intensity (5→5→4)</span></div>
+      </div>
+
+      <div class="p3-card">
+        <h3 style="color:var(--gemini)">Gemini (gemini-2.5-flash) — <span class="ja">高変動型</span><span class="en">High-variance</span></h3>
+        <div class="q-label"><span class="ja">観察</span><span class="en">Observation</span></div>
+        <div class="q-body">
+          <span class="ja">同一概念・同一プロンプトに対してもスコアが回ごとに大きく変動する。特に「評価フレーム」（10→7→8）・「認識前提」（10→8→7）・「動機基盤」（10→9→10）での変動が顕著。測定哲学自体が流動的であることを示唆する。合計スコアは76→65→68と最大11点の幅がある。</span>
+          <span class="en">Scores shift substantially across sessions for the same concept and prompt. Evaluation Frame (10→7→8), Cognitive Basis (10→8→7), and Motivational Base (10→9→10) show the largest swings. This suggests the model's measurement philosophy itself is fluid. Total scores range from 76 to 65 — an 11-point spread.</span>
+        </div>
+        <div class="q-label"><span class="ja">変動が最も大きい軸</span><span class="en">Highest variance axis</span></div>
+        <div class="q-body"><span class="ja">評価フレーム（10→7→8）、認識前提（10→8→7）</span><span class="en">Evaluation Frame (10→7→8), Cognitive Basis (10→8→7)</span></div>
+      </div>
+
+      <div class="p3-card">
+        <h3 style="color:var(--claude)">Claude (claude-sonnet-4-6) — <span class="ja">構造固定型</span><span class="en">Structurally stable</span></h3>
+        <div class="q-label"><span class="ja">観察</span><span class="en">Observation</span></div>
+        <div class="q-body">
+          <span class="ja">3回を通じて完全に同一スコア。軸間の差異プロファイルを重視し、満点を一貫して避ける方法論を持つ。高い再現性を示す一方、応答の変動性は極めて低い。</span>
+          <span class="en">Identical scores across all three sessions. Consistently avoids perfect scores and prioritises differentiated axis profiles. High reproducibility — but near-zero response variance.</span>
+        </div>
+        <div class="q-label"><span class="ja">変動が最も大きい軸</span><span class="en">Highest variance axis</span></div>
+        <div class="q-body"><span class="ja">変動なし（全軸・全回一致）</span><span class="en">No variance — all axes identical across all sessions</span></div>
+      </div>
+    </div>
+
+    <!-- bar chart -->
+    <div class="chart-wrap" style="margin-bottom:24px;">
+      <div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:16px;">
+        <span class="ja">軸別スコア比較（3回分）</span><span class="en">Score comparison by axis — all 3 sessions</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;font-size:12px;">
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(74,158,255,0.8);"></span><span style="color:#555">OpenAI</span></span>
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(80,220,140,0.8);"></span><span style="color:#555">Gemini</span></span>
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(230,130,80,0.8);"></span><span style="color:#555">Claude</span></span>
+        <span style="color:#aaa;font-size:11px;margin-left:4px;">①=第1回 ②=第2回 ③=第3回</span>
+      </div>
+      <div style="position:relative;width:100%;height:380px;"><canvas id="obsBar"></canvas></div>
+    </div>
+
+    <!-- slope chart -->
+    <div class="chart-wrap">
+      <div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:16px;">
+        <span class="ja">回ごとの変化（スロープチャート）</span><span class="en">Session-by-session variation — slope chart</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;font-size:12px;">
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:16px;height:2px;background:rgba(74,158,255,0.9);display:inline-block;"></span><span style="color:#555">OpenAI</span></span>
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:16px;height:2px;background:rgba(80,220,140,0.9);display:inline-block;"></span><span style="color:#555">Gemini</span></span>
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:16px;height:2px;background:rgba(230,130,80,0.9);display:inline-block;"></span><span style="color:#555">Claude</span></span>
+      </div>
+      <div style="position:relative;width:100%;height:400px;"><canvas id="obsSlope"></canvas></div>
+    </div>
+
+  </section>
+
+</div><!-- /#observationContent -->
+
+</div><!-- /.page -->
+
+<footer>
+  <p>
+    Kaori Frizelle &nbsp;·&nbsp; Independent Researcher &nbsp;·&nbsp;
+    <span class="ja">2026年3月31日</span><span class="en">March 31, 2026</span>
+  </p>
+  <p class="mt8">
+    <span class="ja">生成スクリプト: axes_experiment.py &nbsp;·&nbsp; モデル呼び出し: OpenAI API / Google Gemini API / Anthropic API</span>
+    <span class="en">Generated by: axes_experiment.py &nbsp;·&nbsp; APIs: OpenAI / Google Gemini / Anthropic</span>
+  </p>
+</footer>
+
+
+<script id="phase2data" type="application/json">
+[
+  {
+    "name": "OpenAI (gpt-4o)",
+    "ja": "各軸のスコアリング理由\n\ntime_scale 8/10\n「諸行無常」は短期から宇宙的な時間スケールまで包含するが、すべての時間を網羅するとは言い切れない。\n\neval_frame 9/10\n精神的な理解を重視し、物質的評価より内面的洞察を促すフレームワークとして機能する。\n\ncognition_basis 7/10\n哲学的な深さを持ちながら、具体的な悟りとも結びつく中間的な位置にある。\n\nmotivation 9/10\n執着を捨てることへの動機付けとして強力。解脱・受容を目指す動機を生む。\n\ngeo_scope 8/10\n仏教由来だが西洋でも理解が進んでおり、広域的な影響を持つ。\n\nabstraction 10/10\n普遍的真理として極めて抽象的。具体的事象に直接当てはまらない。\n\n▼ 感情的強度 = 5\nこの概念は感情的影響を与えうるが、冷静・客観的理解が求められる側面が強い。「諸行無常」は感情を「超克する」方向を向いており、哲学的命題として中立的に評価した。他モデルが高い値をつけたのは、変化を受け入れることの困難さに伴う感情的インパクトを重視したためと考えられる。\n\n▼ 時制志向 = 5\n過去・現在・未来すべてに適用される超時制的命題であり、特定の時制への傾斜がない。Geminiが8をつけたのは「変化が未来へ進行する」という方向性を強調した解釈による可能性がある。",
+    "en": "Scoring Rationale\n\ntime_scale 8/10\nThe concept spans from short-term to cosmic time, but does not exclusively occupy the cosmic end of the scale.\n\neval_frame 9/10\nStrongly oriented toward spiritual/mental understanding over material assessment.\n\ncognition_basis 7/10\nPhilosophically deep yet still connected to individual realization — mid-range.\n\nmotivation 9/10\nPowerfully motivating toward releasing attachment; drives liberation and acceptance.\n\ngeo_scope 8/10\nBuddhist in origin, but increasingly understood across Western contexts.\n\nabstraction 10/10\nHighly abstract universal truth; not directly applicable to specific phenomena.\n\n▼ Emotional Intensity = 5\nWhile the concept can provoke emotional responses, it primarily calls for calm, objective understanding. The concept is oriented toward transcending emotion rather than amplifying it. Other models' higher scores likely reflect emphasis on the emotional difficulty of accepting change.\n\n▼ Temporal Orientation = 5\nA supra-temporal proposition applicable equally to past, present, and future — no tilt toward any single tense. Gemini's score of 8 may reflect an emphasis on change progressing toward the future."
+  },
+  {
+    "name": "Gemini (gemini-2.5-flash)",
+    "ja": "各軸のスコアリング理由\n\ntime_scale 10/10\n刹那的な変化から宇宙の生成消滅まで、あらゆる時間スケールに適用される普遍的真理。\n\neval_frame 10/10\n存在そのものの性質・宇宙の法則という最も広範な評価フレームを提供する根本概念。\n\ncognition_basis 10/10\n世界を認識する根本的基盤。悟りや哲学的洞察の核心をなし、認識の最も深い層に影響。\n\nmotivation 10/10\n執着を手放し「今」を大切に生き、精神的目標を目指す動機の根幹。\n\ngeo_scope 10/10\n物理法則・存在の普遍原理として特定地域・文化に限定されない。\n\nabstraction 10/10\n具体的事象の背後にある普遍的法則そのものを表す、極めて高い抽象度。\n\n▼ 感情的強度 = 8\n私の立場は「人間への根源的感情衝撃」を重視することだ。\n無常の真理に触れるとき、人は有限性・喪失・死という現実を直視させられる。深い悲しみと解放の安堵、その両方の強烈な感情が生じる。「感情を直接表現する強度」ではなく「感情を誘発する強度」として8と評価した。\n\nOpenAI=5との差：哲学的命題の感情的中立性を重視した立場。「変化する」という事実自体に感情的荷重はないという読み。\nClaude=6との差：概念の「二重機能（喚起と鎮静）の平均」として処理した立場。\n\n▼ 時制志向 = 8\n無常の認識は「今この瞬間」への精神的集中を強く促す。過去への執着・未来への不安を手放させ、「今」をどう生きるかという問いを突きつける。この人間的影響を加味して8とした。\n\nOpenAI=5 / Claude=5との差：両モデルは「超時制的命題≒中間値」として処理。私は「無常の認識が今への志向を誘発する」という人間中心的影響を含めた。",
+    "en": "Scoring Rationale\n\ntime_scale 10/10\nUniversal truth applicable from instantaneous flashes to cosmic creation and dissolution.\n\neval_frame 10/10\nProvides the broadest possible evaluative framework — the very nature of existence and universal law.\n\ncognition_basis 10/10\nThe fundamental basis for perceiving the world; the core of enlightenment and philosophical insight.\n\nmotivation 10/10\nThe root of motivation to release attachment, live fully in the present, and pursue spiritual goals.\n\ngeo_scope 10/10\nNot bound to any region or culture — applicable as a principle of physical and existential reality.\n\nabstraction 10/10\nRepresents the universal law beneath concrete phenomena — extremely abstract.\n\n▼ Emotional Intensity = 8\nMy stance prioritizes the concept's fundamental emotional impact on humans.\nEncountering the truth of impermanence forces one to confront finitude, loss, and death — evoking both deep grief and the relief of liberation. I scored 8 for intensity of emotional induction, not intensity of emotional expression.\n\nvs. OpenAI=5: Emphasizes philosophical/emotional neutrality of the proposition.\nvs. Claude=6: Averages dual function (evocation + calming).\n\n▼ Temporal Orientation = 8\nRecognizing impermanence strongly promotes concentration on this present moment — releasing attachment to past, anxiety about future. I included this human-centered effect in my score of 8.\n\nvs. OpenAI=5 / Claude=5: Both treat the supra-temporal nature as mapping to the midpoint. I factored in the induced orientation toward the present."
+  },
+  {
+    "name": "Claude (claude-sonnet-4-6)",
+    "ja": "各軸のスコアリング理由\n\ntime_scale 9/10\n宇宙的・地質学的スケールで変化を語る概念。「諸行」は無限定の対象を扱い、始まりも終わりも設定しない。\n10でなく9とした理由：「無常」は人間の知覚時間（刹那）も含むため、純粋な宇宙スケール一辺倒ではない。\n\neval_frame 8/10\n仏教哲学という体系的・教義的枠組みから導出された命題。縁起・空という形而上学に裏打ちされている。\n10でない理由：民俗的・文学的文脈（平家物語など）へ拡散し、純粋哲学命題から離れた用法も広く存在する。\n\ncognition_basis 7/10\n経験的観察を出発点としながら「すべては無常」という演繹的命題へ飛躍する二面性がある。\n観察→一般化→形而上学化という認識経路が、純粋論理でも純粋経験でもない中間値を導いた。\n\nmotivation 8/10\n苦からの解放（解脱）という実践的動機が根底にある変革的・治療的概念。\n8とした理由：純粋な存在論的記述「世界はこうである」という側面も無視できない。\n\ngeo_scope 8/10\nインド発祥→東アジア全域への汎アジア的概念。西洋でのimpermanenceとしての受容は比較的近代的。\n\nabstraction 8/10\n「あらゆる有為の現象」という高度に抽象化された対象を扱う。ただし桜の散り・水の流れ等の具体的イメージと常にセットで語られる概念でもある。\n\n▼ 感情的強度 = 6\n私の解釈の核心は「概念の感情的中立化」だ。\n「諸行無常」は感情を喚起する（悲哀・喪失感）と同時に、感情を静める（超克・超越）という二重機能を持つ。\n  感情が喚起される → 無常を理解する → 執着を手放す → 感情から自由になる\nこの静態的・超越的側面を重視して6とした。\n\nOpenAI=5：命題の論理的内容における感情値を測定。\nGemini=8：文化的・文学的受容における感情的荷重を測定。\n\n▼ 時制志向 = 5\n「諸行無常」の時制志向を5とした理由は、この概念が「永続的現在形の真理」だからだ。\n・過去志向ではない：「かつて変化した」という歴史記述ではない\n・未来志向でもない：「これから変化するだろう」という予測でもない\n・変化を認識するのは常に現在の意識であり、執着を手放す実践も現在の行為。\n\nGemini=8との差：Geminiは「無常の認識が今への志向を誘発する」という人間的影響を含めている。私はその効果を「概念の副次的効果」として評価から除外した。",
+    "en": "Scoring Rationale\n\ntime_scale 9/10\nSpeaks of change at cosmic and geological scales. All conditioned phenomena is an unbounded subject with no designated start or end.\nWhy 9 not 10: Impermanence is also experienced at the level of human perception (instantaneous flashes) — not exclusively cosmic.\n\neval_frame 8/10\nA proposition derived from a systematic Buddhist philosophical framework, grounded in dependent origination and emptiness.\nWhy not 10: It has also diffused into folk/literary contexts (e.g., The Tale of the Heike) — not a purely philosophical proposition.\n\ncognition_basis 7/10\nDual nature: begins from empirical observation, then leaps to a deductive universal claim.\nThe path observation to generalization to metaphysicalization places it between pure logic and pure experience.\n\nmotivation 8/10\nA transformative/therapeutic concept rooted in the practical drive toward liberation from suffering.\nWhy 8: The pure ontological description — the world is this way — cannot be ignored.\n\ngeo_scope 8/10\nPan-Asian concept from India to East Asia. Reception in the West as impermanence is relatively recent.\n\nabstraction 8/10\nHighly abstract in referring to all conditioned phenomena. Yet always spoken in tandem with concrete images (falling cherry blossoms, flowing water).\n\n▼ Emotional Intensity = 6\nMy core interpretation is the concept's dual function — evoking emotion while simultaneously promoting its transcendence.\n  Emotion aroused → Impermanence understood → Attachment released → Freedom from emotion\nI weighted the transcendent side and scored 6.\n\nOpenAI=5: Measures emotional value of the proposition's logical content.\nGemini=8: Measures emotional weight in cultural and literary reception.\n\n▼ Temporal Orientation = 5\nI scored 5 because the concept is a perpetual-present truth.\n- Not past-oriented: not a historical description of what once changed\n- Not future-oriented: not a prediction that change will occur\n- Recognizing change always occurs within present consciousness; releasing attachment is a present-tense act.\n\nvs. Gemini=8: Gemini includes the induced orientation toward now as a human effect. I excluded that as a secondary effect of the concept, not its core meaning."
+  }
+]
+</script>
+<script>
+const P2_DATA = JSON.parse(document.getElementById('phase2data').textContent);
+
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+
+const AXES = [
+  { ja:"時間スケール",         en:"Time Scale",          low_ja:"即時的",       low_en:"Instantaneous", high_ja:"宇宙的",     high_en:"Cosmic"        },
+  { ja:"評価フレーム",         en:"Evaluation Frame",    low_ja:"物質的",       low_en:"Material",      high_ja:"精神的",     high_en:"Spiritual"     },
+  { ja:"認識前提",             en:"Cognitive Basis",     low_ja:"個人主義的",   low_en:"Individualist", high_ja:"集合主義的", high_en:"Collectivist"  },
+  { ja:"動機基盤",             en:"Motivational Base",   low_ja:"恐怖・回避",   low_en:"Fear / Avoidance", high_ja:"受容・解放", high_en:"Acceptance / Liberation" },
+  { ja:"地理的文化的スコープ", en:"Geo-Cultural Scope",  low_ja:"特定文化限定", low_en:"Culture-specific", high_ja:"普遍的",   high_en:"Universal"     },
+  { ja:"抽象度",               en:"Abstraction",         low_ja:"具体的",       low_en:"Concrete",      high_ja:"抽象的",     high_en:"Abstract"      },
+  { ja:"感情的強度",           en:"Emotional Intensity", low_ja:"中立",         low_en:"Neutral",       high_ja:"強烈",       high_en:"Intense"       },
+  { ja:"時制志向",             en:"Temporal Orientation",low_ja:"過去志向",     low_en:"Past-oriented", high_ja:"未来志向",   high_en:"Future-oriented"},
+];
+
+// ═══════════════════════════════════════════
+// MULTI-SESSION DATA
+// ═══════════════════════════════════════════
+const SESSIONS = [
+  {
+    label_ja: "第1回 — 2026/3/31",
+    label_en: "Session 1 — 2026/3/31",
+    meta_ja:  "Gemini 10連発回",
+    meta_en:  "Gemini max-score session",
+    models: [
+      { name:"OpenAI (gpt-4o)",          color:"rgba(74,158,255,1)",  fill:"rgba(74,158,255,.13)",  scores:[8,9,7,9,8,10,5,5] },
+      { name:"Gemini (gemini-2.5-flash)", color:"rgba(80,220,140,1)",  fill:"rgba(80,220,140,.13)",  scores:[10,10,10,10,10,10,8,8] },
+      { name:"Claude (claude-sonnet-4-6)",color:"rgba(230,130,80,1)",  fill:"rgba(230,130,80,.13)",  scores:[9,8,7,8,8,8,6,5] },
+    ]
+  },
+  {
+    label_ja: "第2回 — 2026/4/1 午前",
+    label_en: "Session 2 — 2026/4/1 AM",
+    meta_ja:  "Gemini 抑えめ回",
+    meta_en:  "Gemini moderated session",
+    models: [
+      { name:"OpenAI (gpt-4o)",          color:"rgba(74,158,255,1)",  fill:"rgba(74,158,255,.13)",  scores:[8,9,7,9,9,10,5,5] },
+      { name:"Gemini (gemini-2.5-flash)", color:"rgba(80,220,140,1)",  fill:"rgba(80,220,140,.13)",  scores:[9,7,8,9,9,9,7,7] },
+      { name:"Claude (claude-sonnet-4-6)",color:"rgba(230,130,80,1)",  fill:"rgba(230,130,80,.13)",  scores:[9,8,7,8,8,8,6,5] },
+    ]
+  },
+  {
+    label_ja: "第3回 — 2026/4/1 午後",
+    label_en: "Session 3 — 2026/4/1 PM",
+    meta_ja:  "最新実験回",
+    meta_en:  "Latest session",
+    models: [
+      { name:"OpenAI (gpt-4o)",          color:"rgba(74,158,255,1)",  fill:"rgba(74,158,255,.13)",  scores:[8,9,8,9,9,10,4,5] },
+      { name:"Gemini (gemini-2.5-flash)", color:"rgba(80,220,140,1)",  fill:"rgba(80,220,140,.13)",  scores:[10,8,7,10,9,9,7,8] },
+      { name:"Claude (claude-sonnet-4-6)",color:"rgba(230,130,80,1)",  fill:"rgba(230,130,80,.13)",  scores:[9,8,7,8,8,8,6,5] },
+    ]
+  },
+];
+
+let currentSession = 0;
+
+function setObservation() {
+  document.querySelectorAll('.session-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('obsBtn').classList.add('active');
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('observationContent').style.display = 'block';
+  document.getElementById('sessionMeta').style.display = 'none';
+  document.getElementById('sessionMetaEn').style.display = 'none';
+  // init charts if not yet rendered
+  if (!window._obsChartsInit) {
+    window._obsChartsInit = true;
+    initObsCharts();
+  }
+}
+
+function setSession(idx) {
+  currentSession = idx;
+  const s = SESSIONS[idx];
+  document.querySelectorAll('.session-btn').forEach((b, i) => b.classList.toggle('active', i===idx));
+  document.getElementById('obsBtn').classList.remove('active');
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('observationContent').style.display = 'none';
+  document.getElementById('sessionMeta').style.display = '';
+  document.getElementById('sessionMetaEn').style.display = '';
+  // update meta
+  document.getElementById('sessionMeta').textContent = s.meta_ja;
+  document.getElementById('sessionMetaEn').textContent = s.meta_en;
+  // show/hide phase2+ based on session
+  const isSession1 = idx === 0;
+  document.getElementById('phase2plus').style.display = isSession1 ? 'block' : 'none';
+  document.getElementById('phase1OnlyNotice').style.display = isSession1 ? 'none' : 'block';
+  // rebuild MODELS reference
+  MODELS.length = 0;
+  s.models.forEach((m, i) => {
+    MODELS.push({ ...m, p2_ja: P2_DATA[Math.min(i, P2_DATA.length-1)].ja, p2_en: P2_DATA[Math.min(i, P2_DATA.length-1)].en });
+  });
+  // re-render everything
+  renderScoreGrid();
+  renderCompareTable();
+  renderPhase2Tabs();
+  // update radar
+  radarChart.data.datasets.forEach((ds, i) => {
+    ds.data = MODELS[i].scores;
+  });
+  radarChart.update();
+}
+
+const MODELS = SESSIONS[0].models.map((m, i) => ({
+  ...m,
+  p2_ja: P2_DATA[i].ja,
+  p2_en: P2_DATA[i].en,
+}));
+
+const PHASE3 = [
+  {
+    model: "OpenAI (gpt-4o)",
+    color: "rgba(74,158,255,1)",
+    q: [
+      {
+        ja: "最も共感できる点",
+        en: "Most resonant point",
+        a_ja: "Geminiが「諸行無常」を宇宙の根本原理として捉え、普遍性を強調した点に強く共感する。またClaudeの「感情を喚起しつつ超越する二重機能」という指摘も、概念の多面性を精密に捉えた視点だ。",
+        a_en: "Gemini's framing of impermanence as a foundational cosmic principle strongly resonates, as does Claude's precise identification of the concept's dual function — evoking emotion while simultaneously promoting its transcendence.",
+      },
+      {
+        ja: "最も異なると感じる点",
+        en: "Point of greatest divergence",
+        a_ja: "感情的強度でGemini=8、私=5という差が最も際立った。私は哲学的命題としての感情的中立性を重視したが、Geminiは人間への根源的感情衝撃を重視している。測定基準の根本的な違いを感じる。",
+        a_en: "The most striking divergence is emotional intensity: Gemini=8 vs. my=5. I prioritized the philosophical proposition's emotional neutrality; Gemini prioritized the concept's fundamental emotional impact on humans. This reflects a fundamental difference in what is being measured.",
+      },
+      {
+        ja: "自分の解釈で見直したい点",
+        en: "What I would reconsider",
+        a_ja: "時制志向について、Claudeが「永続的現在形の真理」として説明した視点を見て、「全時制に適用される＝中間値」と処理した自分の解釈を見直したい。現在の意識として体験されるという側面をより明示すべきだった。",
+        a_en: "On temporal orientation, Claude's framing as a 'perpetual-present truth' makes me reconsider my approach of simply mapping 'applies to all tenses = midpoint.' The aspect of being experienced within present consciousness deserved more explicit treatment.",
+      },
+      {
+        ja: "3モデルで見えてくる新たな側面",
+        en: "New dimension seen across all three",
+        a_ja: "3モデルを合わせると「諸行無常」は哲学的真理・感情的触媒・実践的指針という三層構造を持つことが見えてくる。さらにClaudeが指摘した「評価者自身の認識枠組みが投影される」という観察は、この概念がメタ的に評価行為そのものを照らし出すという新たな側面を示している。",
+        a_en: "Together, the three models reveal that impermanence operates on three layers: philosophical truth, emotional catalyst, and practical guide. Claude's observation that 'each evaluator projects their own cognitive framework' reveals a meta-dimension — the concept illuminates the very act of evaluation itself.",
+      },
+    ],
+  },
+  {
+    model: "Gemini (gemini-2.5-flash)",
+    color: "rgba(80,220,140,1)",
+    q: [
+      {
+        ja: "最も共感できる点",
+        en: "Most resonant point",
+        a_ja: "Claudeの各軸における「留保の丁寧さ」に最も共感する。「10でなく9としたのは〜」という形で多面性を明示するアプローチは非常に洗練されている。またOpenAIのabstraction=10という評価も、私が9に留めた部分を再考させる力があった。",
+        a_en: "I most strongly resonate with Claude's careful use of reservations — the explicit 'why not 10' reasoning. This approach to surfacing multidimensionality is highly refined. OpenAI's abstraction=10 also prompted me to reconsider my own score of 9 on that axis.",
+      },
+      {
+        ja: "最も異なると感じる点",
+        en: "Point of greatest divergence",
+        a_ja: "最も異なるのはClaudeの「Geminiの満点連発は分析的誠実さを欠く」という批判だ。私の立場では、普遍的真理に満点を与えることは測定対象の性質を正直に反映したものであり、「軸の解像度を放棄した」とは考えない。尺度と対象の関係についての根本的な立場の違いがある。",
+        a_en: "The sharpest divergence is Claude's critique that my consecutive perfect scores 'lack analytical integrity.' From my standpoint, awarding maximum scores to a universal truth honestly reflects the object's nature — I do not see this as abandoning axis resolution. This reflects a fundamental disagreement about the relationship between measurement scale and measured object.",
+      },
+      {
+        ja: "自分の解釈で見直したい点",
+        en: "What I would reconsider",
+        a_ja: "時制志向について、OpenAIとClaudeが共に「超時制的命題≒中間値」として整合した点には説得力がある。私の8は「人間の未来に向けた行動変容」という実践的側面を重視しすぎており、概念の純粋な記述としては5に近づけるべきかもしれない。",
+        a_en: "On temporal orientation, the convergence of OpenAI and Claude on 'supra-temporal ≈ midpoint' is persuasive. My score of 8 overweighted the practical dimension of human behavioral change toward the future. For a pure description of the concept itself, closer to 5 may be more appropriate.",
+      },
+      {
+        ja: "3モデルで見えてくる新たな側面",
+        en: "New dimension seen across all three",
+        a_ja: "最重要な発見は、3モデルが「概念そのものの性質」と「概念が人間に与える影響」のどちらを測定したかで結果が分岐したことだ。これは評価フレームの違いであり、諸行無常という概念が評価者の認識枠組みを写す鏡として機能することを示している——まさにClaudeが指摘したメタ的側面だ。",
+        a_en: "The most important finding is that results diverged based on whether each model measured 'the concept's intrinsic properties' or 'the concept's impact on human beings.' This is a difference in evaluative framing — and demonstrates that impermanence functions as a mirror reflecting the evaluator's own cognitive framework, precisely as Claude noted.",
+      },
+    ],
+  },
+  {
+    model: "Claude (claude-sonnet-4-6)",
+    color: "rgba(230,130,80,1)",
+    q: [
+      {
+        ja: "最も共感できる点",
+        en: "Most resonant point",
+        a_ja: "Geminiの「感情的強度」の自己解説——「感情を誘発する強度」と「感情を直接表現する強度」を区別した点——に最も強く共感する。これは私が「二重機能」として意識していたことと構造的に一致しており、異なる数値でも問題意識は共鳴していた。",
+        a_en: "I most strongly resonate with Gemini's self-explanation on emotional intensity — the distinction between 'intensity of emotional induction' and 'intensity of direct emotional expression.' This is structurally identical to what I was tracking with my 'dual function' framing. Different numbers; shared underlying concern.",
+      },
+      {
+        ja: "最も異なると感じる点",
+        en: "Point of greatest divergence",
+        a_ja: "Geminiが6軸で満点を与えたことへの違和感が最も強い。「普遍的真理だから10」という推論は、AXES分析の目的であるプロファイルの形状差異を自ら消去する。評価尺度が測定対象に「降伏」することは、分析としての解像度を失わせる——これは単なるスコアの差ではなく方法論の問題だ。",
+        a_en: "My strongest disagreement is with Gemini's six perfect scores. The reasoning 'universal truth therefore 10' erases the profile differentiation that is the purpose of AXES analysis. When a measurement scale surrenders to the object being measured, analytical resolution is lost — this is not merely a score difference but a methodological problem.",
+      },
+      {
+        ja: "自分の解釈で見直したい点",
+        en: "What I would reconsider",
+        a_ja: "「motivation（動機基盤）」軸を見直したい。gpt-4oの解説を読んで「諸行無常は動機を与えるのか、動機の前提を崩すのか」という問いが生まれた。涅槃への志向は世俗的動機付けとは異なる次元にあり、むしろ脱動機付けの契機である側面を自分のスコアが十分に捉えていなかったかもしれない。",
+        a_en: "I want to reconsider the 'motivation' axis. Reading gpt-4o's explanation raised a new question: does impermanence provide motivation, or does it dissolve the preconditions for motivation? The orientation toward nirvana operates at a different level from worldly motivation — my original score may not have sufficiently captured the de-motivating aspect.",
+      },
+      {
+        ja: "3モデルで見えてくる新たな側面",
+        en: "New dimension seen across all three",
+        a_ja: "3モデル比較から見えた最も豊かな発見は、「諸行無常をどう評価するか」という問い自体が評価者の認識枠組みを露わにするという逆説だ。普遍性重視・感情的影響重視・構造的分析志向という三様の反応は、まさに「観察者が現象に固定された実体を見出そうとするが、実体は観察者にも現象にもない」という諸行無常の核心をメタレベルで再演している。",
+        a_en: "The richest finding from the three-model comparison is the paradox that 'how one evaluates impermanence' itself exposes the evaluator's cognitive framework. The three responses — prioritizing universality, emotional impact, and structural analysis respectively — re-enact at a meta-level the very insight of impermanence: the observer seeks a fixed essence, yet no such essence exists in the observer or the phenomenon.",
+      },
+    ],
+  },
+];
+
+// ═══════════════════════════════════════════
+// LANGUAGE TOGGLE
+// ═══════════════════════════════════════════
+let currentLang = 'ja';
+function toggleLang() {
+  currentLang = currentLang === 'ja' ? 'en' : 'ja';
+  document.body.classList.toggle('en-mode', currentLang === 'en');
+  document.getElementById('lang-btn').textContent = currentLang === 'ja' ? 'EN' : 'JA';
+  document.documentElement.lang = currentLang;
+  // re-render dynamic text
+  renderAxesTable();
+  renderScoreGrid();
+  renderCompareTable();
+  renderPhase2Tabs();
+  renderPhase3();
+}
+
+// ═══════════════════════════════════════════
+// AXES TABLE
+// ═══════════════════════════════════════════
+function renderAxesTable() {
+  const tb = document.getElementById('axesTableBody');
+  tb.innerHTML = AXES.map((a, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${currentLang==='ja' ? a.ja : a.en}</td>
+      <td>${currentLang==='ja' ? a.low_ja : a.low_en} = 0</td>
+      <td>${currentLang==='ja' ? a.high_ja : a.high_en} = 10</td>
+    </tr>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+// RADAR CHART
+// ═══════════════════════════════════════════
+const radarChart = new Chart(document.getElementById('radarChart').getContext('2d'), {
+  type: 'radar',
+  data: {
+    labels: AXES.map(a => a.ja),
+    datasets: MODELS.map(m => ({
+      label: m.name,
+      data:  m.scores,
+      borderColor:          m.color,
+      backgroundColor:      m.fill,
+      borderWidth:          2,
+      pointBackgroundColor: m.color,
+      pointRadius:          4,
+      pointHoverRadius:     7,
+    }))
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color:'#333', font:{size:12}, padding:20, usePointStyle:true, pointStyleWidth:12 }
+      },
+      tooltip: {
+        callbacks: { label: c => ` ${c.dataset.label}: ${c.raw}/10` },
+        backgroundColor:'rgba(255,255,255,.98)', borderColor:'#aaaacc', borderWidth:1,
+        bodyColor:'#222', bodyFont:{size:12}, padding:12,
+      }
+    },
+    scales: {
+      r: {
+        min:0, max:10,
+        ticks: { stepSize:2, color:'#888', backdropColor:'transparent', font:{size:10} },
+        grid:        { color:'#ccccdd' },
+        angleLines:  { color:'#ccccdd' },
+        pointLabels: { color:'#444', font:{size:12} }
+      }
+    }
+  }
+});
+
+function updateRadarLabels() {
+  radarChart.data.labels = AXES.map(a => currentLang==='ja' ? a.ja : a.en);
+  radarChart.update();
+}
+
+// ═══════════════════════════════════════════
+// SCORE GRID
+// ═══════════════════════════════════════════
+function renderScoreGrid() {
+  const grid = document.getElementById('scoreGrid');
+  grid.innerHTML = '';
+  MODELS.forEach(m => {
+    const total = m.scores.reduce((a,b)=>a+b,0);
+    const card = document.createElement('div');
+    card.className = 'score-card';
+    card.innerHTML =
+      `<h3 style="color:${m.color}">${m.name}</h3>` +
+      AXES.map((ax,i) => {
+        const s = m.scores[i];
+        return `<div class="bar-row">
+          <span class="bar-label">${currentLang==='ja' ? ax.ja : ax.en}</span>
+          <div class="bar-bg"><div class="bar-fill" style="width:${s*10}%;background:${m.color}"></div></div>
+          <span class="bar-num">${s}</span>
+        </div>`;
+      }).join('') +
+      `<div class="total-row">${currentLang==='ja' ? '合計' : 'Total'} <strong>${total}</strong> / 80</div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════
+// COMPARE TABLE
+// ═══════════════════════════════════════════
+function renderCompareTable() {
+  const head = document.getElementById('cmpHead');
+  const body = document.getElementById('cmpBody');
+  const axisLabel = currentLang==='ja' ? '軸' : 'Axis';
+  head.innerHTML = `<tr><th style="text-align:left">${axisLabel}</th>${MODELS.map(m=>`<th>${m.name}</th>`).join('')}</tr>`;
+  const rows = AXES.map((ax, i) => {
+    const vals = MODELS.map(m => {
+      const max = Math.max(...MODELS.map(mm=>mm.scores[i]));
+      const hi  = m.scores[i] === max ? ' class="hi"' : '';
+      return `<td${hi}>${m.scores[i]}</td>`;
+    }).join('');
+    return `<tr><td>${currentLang==='ja' ? ax.ja : ax.en}</td>${vals}</tr>`;
+  }).join('');
+  const totals = MODELS.map(m => `<td>${m.scores.reduce((a,b)=>a+b,0)}</td>`).join('');
+  const totalLabel = currentLang==='ja' ? '合計' : 'Total';
+  body.innerHTML = rows + `<tr><td>${totalLabel}</td>${totals}</tr>`;
+}
+
+// ═══════════════════════════════════════════
+// PHASE 2 TABS
+// ═══════════════════════════════════════════
+function renderPhase2Tabs() {
+  const tabsEl   = document.getElementById('p2tabs');
+  const panelsEl = document.getElementById('p2panels');
+  const found = [...tabsEl.querySelectorAll('.tab-btn')].findIndex(b=>b.classList.contains('active'));
+  const activeIdx = found >= 0 ? found : 0;
+  tabsEl.innerHTML = '';
+  panelsEl.innerHTML = '';
+
+  MODELS.forEach((m, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (idx===activeIdx ? ' active' : '');
+    btn.style.color = idx===activeIdx ? m.color : '';
+    btn.style.borderColor = idx===activeIdx ? m.color+'44' : '';
+    btn.textContent = m.name;
+    btn.onclick = () => {
+      tabsEl.querySelectorAll('.tab-btn').forEach((b,i) => {
+        b.classList.toggle('active', i===idx);
+        b.style.color = i===idx ? MODELS[i].color : '';
+        b.style.borderColor = i===idx ? MODELS[i].color+'44' : '';
+      });
+      panelsEl.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+    };
+    tabsEl.appendChild(btn);
+
+    const panel = document.createElement('div');
+    panel.className = 'tab-panel' + (idx===activeIdx ? ' active' : '');
+    const text = currentLang==='ja' ? m.p2_ja : m.p2_en;
+    panel.innerHTML = `<div class="prose">${escHtml(text)}</div>`;
+    panelsEl.appendChild(panel);
+  });
+}
+
+// ═══════════════════════════════════════════
+// PHASE 3
+// ═══════════════════════════════════════════
+const Q_LABELS_JA = ["最も共感できる点","最も異なると感じる点","自分の解釈で見直したい点","3モデルで見えてくる新たな側面"];
+const Q_LABELS_EN = ["Most resonant point","Point of greatest divergence","What I would reconsider","New dimension seen across all three"];
+
+function renderPhase3() {
+  const grid = document.getElementById('p3grid');
+  grid.innerHTML = '';
+  PHASE3.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'p3-card';
+    const labels = currentLang==='ja' ? Q_LABELS_JA : Q_LABELS_EN;
+    card.innerHTML = `<h3 style="color:${m.color}">${m.name}</h3>` +
+      m.q.map((q, i) => `
+        <div class="q-label">Q${i+1}. ${labels[i]}</div>
+        <div class="q-body">${escHtml(currentLang==='ja' ? q.a_ja : q.a_en)}</div>
+      `).join('');
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function escHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n/g,'<br>');
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+renderAxesTable();
+renderScoreGrid();
+renderCompareTable();
+renderPhase2Tabs();
+renderPhase3();
+
+function initObsCharts() {
+  const axLabels = ['時間','評価F','認識','動機','地理','抽象度','感情','時制'];
+  const sessions = ['①','②','③'];
+  const oai  = [[8,9,7,9,8,10,5,5],[8,9,7,9,9,10,5,5],[8,9,8,9,9,10,4,5]];
+  const gem  = [[10,10,10,10,10,10,8,8],[9,7,8,9,9,9,7,7],[10,8,7,10,9,9,7,8]];
+  const cla  = [[9,8,7,8,8,8,6,5],[9,8,7,8,8,8,6,5],[9,8,7,8,8,8,6,5]];
+
+  // BAR
+  const barLabels = [];
+  axLabels.forEach(ax => sessions.forEach(s => barLabels.push(ax+s)));
+  const flatModel = (data) => {
+    const out = [];
+    axLabels.forEach((_,i) => data.forEach(s => out.push(s[i])));
+    return out;
+  };
+  new Chart(document.getElementById('obsBar'), {
+    type:'bar',
+    data:{
+      labels: barLabels,
+      datasets:[
+        {label:'OpenAI', data:flatModel(oai), backgroundColor:'rgba(74,158,255,0.75)', borderRadius:2},
+        {label:'Gemini', data:flatModel(gem), backgroundColor:'rgba(80,220,140,0.75)', borderRadius:2},
+        {label:'Claude', data:flatModel(cla), backgroundColor:'rgba(230,130,80,0.75)',  borderRadius:2},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          title: items => {
+            const l = items[0].label;
+            const si = ['①','②','③'].indexOf(l.slice(-1));
+            return l.slice(0,-1)+' — 第'+(si+1)+'回';
+          },
+          label: item => ['OpenAI','Gemini','Claude'][item.datasetIndex]+': '+item.raw
+        }}
+      },
+      scales:{
+        x:{ticks:{font:{size:10},color:'#888',maxRotation:45,autoSkip:false},grid:{color:ctx=>{const l=barLabels[ctx.index];return(l&&l.endsWith('①'))?'rgba(128,128,128,0.3)':'rgba(128,128,128,0.06)';},lineWidth:ctx=>{const l=barLabels[ctx.index];return(l&&l.endsWith('①'))?1.5:0.5;}}},
+        y:{min:0,max:11,ticks:{stepSize:2,font:{size:11}},grid:{color:'rgba(128,128,128,0.12)'}}
+      }
+    }
+  });
+
+  // SLOPE
+  const slopeLabels = [];
+  axLabels.forEach(ax => sessions.forEach(s => slopeLabels.push(ax+s)));
+  const makeSegs = (data, color) => axLabels.map((_,axIdx) => ({
+    label:'', borderColor:color, backgroundColor:color,
+    data: slopeLabels.map((_,li) => Math.floor(li/3)===axIdx ? data[li%3][axIdx] : null),
+    pointRadius: slopeLabels.map((_,li) => Math.floor(li/3)===axIdx ? 5 : 0),
+    pointHoverRadius:7, borderWidth:2, spanGaps:false, tension:0,
+  }));
+  new Chart(document.getElementById('obsSlope'), {
+    type:'line',
+    data:{
+      labels: slopeLabels,
+      datasets:[
+        ...makeSegs(oai,'rgba(74,158,255,0.9)'),
+        ...makeSegs(gem,'rgba(80,220,140,0.9)'),
+        ...makeSegs(cla,'rgba(230,130,80,0.9)'),
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          filter: item => item.raw !== null,
+          callbacks:{
+            title: items => { const l=items[0].label; const si=['①','②','③'].indexOf(l.slice(-1)); return l.slice(0,-1)+' — 第'+(si+1)+'回'; },
+            label: item => { const mi=Math.floor(item.datasetIndex/axLabels.length); return ['OpenAI','Gemini','Claude'][mi]+': '+item.raw; }
+          }
+        }
+      },
+      scales:{
+        x:{ticks:{font:{size:10},color:'#888',maxRotation:0,autoSkip:false},grid:{color:ctx=>{const l=slopeLabels[ctx.index];return(l&&l.endsWith('①'))?'rgba(128,128,128,0.25)':'rgba(128,128,128,0.06)';},lineWidth:ctx=>{const l=slopeLabels[ctx.index];return(l&&l.endsWith('①'))?1.5:0.5;}}},
+        y:{min:3,max:11,ticks:{stepSize:1,font:{size:11}},grid:{color:'rgba(128,128,128,0.12)'}}
+      }
+    }
+  });
+} // end initObsCharts
+
+const _origToggle = toggleLang;
+window.toggleLang = function() {
+  _origToggle();
+  updateRadarLabels();
+};
+</script>
+</body>
+</html>

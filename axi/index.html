@@ -169,6 +169,21 @@ hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
 }
 .btn-outline:hover{border-color:var(--muted);color:var(--text);}
 
+/* LANG TOGGLE */
+.ja { display: revert; }
+.en { display: none; }
+body.en-mode .ja { display: none; }
+body.en-mode .en { display: revert; }
+#lang-btn{
+  padding:5px 14px;border-radius:20px;
+  border:1px solid var(--border2);
+  background:transparent;color:var(--text);
+  font-family:'DM Mono',monospace;
+  font-size:.72rem;letter-spacing:.06em;
+  cursor:pointer;transition:border-color .2s,color .2s;
+}
+#lang-btn:hover{border-color:var(--gold);color:var(--gold);}
+
 /* NOTE */
 .note{
   background:var(--navy2);
@@ -203,6 +218,7 @@ footer p{
   <div class="nav-right">
     <a href="../axes/">AXES</a>
     <a href="../axe-l/">AXE-L</a>
+    <button id="lang-btn" onclick="toggleLang()">JA</button>
   </div>
 </div>
 
@@ -218,20 +234,20 @@ footer p{
   <div class="assumptions">
     <h3>Core Assumptions</h3>
     <ul>
-      <li>Difference is not a problem to be eliminated, but a condition that makes recognition and thought possible.</li>
-      <li>Phenomena and entities can be described through shared coordinates consisting of axes, dimensions, and perspectives.</li>
-      <li>Values and evaluations are relative, yet constrained within local contexts, where optimisation is possible.</li>
+      <li><span class="en">Difference is not a problem to be eliminated, but a condition that makes recognition and thought possible.</span><span class="ja">差異は排除すべき問題ではなく、認識と思考を可能にする条件である。</span></li>
+      <li><span class="en">Phenomena and entities can be described through shared coordinates consisting of axes, dimensions, and perspectives.</span><span class="ja">現象や存在は、軸・次元・視点からなる共有座標によって記述できる。</span></li>
+      <li><span class="en">Values and evaluations are relative, yet constrained within local contexts, where optimisation is possible.</span><span class="ja">価値と評価は相対的であるが、局所的文脈の中で制約され、最適化が可能である。</span></li>
     </ul>
   </div>
 
   <!-- 0 -->
   <div class="sec">
     <div class="sec-num">Section 00</div>
-    <h2>From Nothingness to Difference</h2>
-    <p>When we attempt to imagine "nothingness," we are not truly observing an empty void. Rather, we may consider a state in which we exist, yet are not recognising anything.</p>
-    <p>As cellular division progresses and organs and neural systems develop, connections between the brain and sensory organs emerge. At that point, perception begins: sound, smell, temperature, light. When a new input arises, a distinction appears — a transition from zero to one. This difference generates recognition.</p>
-    <p>Subsequent inputs create further distinctions, and these differences form axes. Difference gives rise to recognition, and axes emerge as a means to define existence. Without difference, recognition does not occur.</p>
-    <p>As axes increase, dimensions increase. Through comparison of differences, properties are defined, and relationships are identified. Human cognition can thus be understood as a system composed of numerous axes and dimensions, expanding continuously through experience and knowledge.</p>
+    <h2><span class="en">From Nothingness to Difference</span><span class="ja">無から差異へ</span></h2>
+    <p><span class="en">When we attempt to imagine "nothingness," we are not truly observing an empty void. Rather, we may consider a state in which we exist, yet are not recognising anything.</span><span class="ja">「無」を想像しようとするとき、私たちは本当に空虚な空白を見ているのではない。むしろ、存在しているが何も認識していない状態として考えることができる。</span></p>
+    <p><span class="en">As cellular division progresses and organs and neural systems develop, connections between the brain and sensory organs emerge. At that point, perception begins: sound, smell, temperature, light. When a new input arises, a distinction appears — a transition from zero to one. This difference generates recognition.</span><span class="ja">細胞分裂が進み、器官と神経系が発達するにつれて、脳と感覚器官のつながりが生まれる。そこで知覚が始まる：音、匂い、温度、光。新たな入力が生じると、区別が現れる——ゼロから一への移行。この差異が認識を生む。</span></p>
+    <p><span class="en">Subsequent inputs create further distinctions, and these differences form axes. Difference gives rise to recognition, and axes emerge as a means to define existence. Without difference, recognition does not occur.</span><span class="ja">続く入力がさらなる区別を生み、これらの差異が軸を形成する。差異が認識を生み、軸は存在を定義する手段として現れる。差異がなければ、認識は起こらない。</span></p>
+    <p><span class="en">As axes increase, dimensions increase. Through comparison of differences, properties are defined, and relationships are identified. Human cognition can thus be understood as a system composed of numerous axes and dimensions, expanding continuously through experience and knowledge.</span><span class="ja">軸が増えるにつれ、次元が増える。差異の比較を通じて、性質が定義され、関係が特定される。人間の認識はこのように、経験と知識を通じて継続的に拡張する多数の軸と次元からなるシステムとして理解できる。</span></p>
   </div>
 
   <hr>
@@ -239,10 +255,10 @@ footer p{
   <!-- VALUE -->
   <div class="sec">
     <div class="sec-num">Section 01</div>
-    <h2>Value and Local Optimisation</h2>
-    <p>When something is defined, evaluative axes inevitably arise: good/bad, correct/incorrect, high/low, large/small. These values are relative in the sense that they depend on the observer's position and framework. Different observers may adopt different axes, leading to different evaluations.</p>
-    <p>This does not imply that all evaluations are equally valid in all contexts. Rather, evaluation is constrained by local conditions. Within a given context and for a given purpose, certain evaluative frameworks become more appropriate than others — and it is possible to determine locally optimal values.</p>
-    <p>Adjusting between zooming in and out — selecting the appropriate scale — is essential for evaluation. From an extreme zoomed-out perspective, differences may appear negligible. This highlights the importance of perspective: who is observing, and from where.</p>
+    <h2><span class="en">Value and Local Optimisation</span><span class="ja">価値と局所最適化</span></h2>
+    <p><span class="en">When something is defined, evaluative axes inevitably arise: good/bad, correct/incorrect, high/low, large/small. These values are relative in the sense that they depend on the observer's position and framework. Different observers may adopt different axes, leading to different evaluations.</span><span class="ja">何かが定義されると、評価軸が必然的に生まれる：良い/悪い、正しい/誤り、高い/低い、大きい/小さい。これらの価値は、観察者の立場と枠組みに依存するという意味で相対的である。</span></p>
+    <p><span class="en">This does not imply that all evaluations are equally valid in all contexts. Rather, evaluation is constrained by local conditions. Within a given context and for a given purpose, certain evaluative frameworks become more appropriate than others — and it is possible to determine locally optimal values.</span><span class="ja">これはすべての評価がすべての文脈で等しく有効であることを意味しない。むしろ、評価は局所的条件によって制約される。与えられた文脈と目的の中で、局所的に最適な価値を決定することができる。</span></p>
+    <p><span class="en">Adjusting between zooming in and out — selecting the appropriate scale — is essential for evaluation. From an extreme zoomed-out perspective, differences may appear negligible. This highlights the importance of perspective: who is observing, and from where.</span><span class="ja">ズームインとズームアウトの間を調整すること——適切なスケールを選択すること——は評価に不可欠である。極端にズームアウトした視点からは、差異が取るに足らないものに見えることがある。これは視点の重要性を示している：誰が、どこから観察しているか。</span></p>
   </div>
 
   <hr>
@@ -250,12 +266,12 @@ footer p{
   <!-- BACKGROUND -->
   <div class="sec">
     <div class="sec-num">Section 02</div>
-    <h2>The Need for Shared Coordinates</h2>
-    <p>Difference frequently generates conflict. Contemporary society is marked by intensifying polarisation and a rapid increase in hostility. Communication now takes place across three distinct layers:</p>
-    <p><strong style="color:var(--text)">Human to Human</strong> — In most conflicts, it is not accurate to say that one party is wrong and the other right. Both are correct within their own frames. They are seeing the same question from different coordinates. When those coordinates remain invisible, dialogue generates heat rather than light.</p>
-    <p><strong style="color:var(--text)">Human and AI</strong> — AI optimises from its own coordinate system rather than from a genuine understanding of human intent. The opacity of AI's internal processes makes structural misalignment possible and control increasingly difficult.</p>
-    <p><strong style="color:var(--text)">AI to AI</strong> — Models built on different architectures, different training data, and different cultural contexts are collaborating without a shared coordinate protocol. Divergence accumulates, undetected.</p>
-    <p>AXI holds that, from a meta perspective, all positions are equally valid in relative terms — but that their validity is locally bounded. Making coordinates explicit is the necessary precondition for genuine understanding.</p>
+    <h2><span class="en">The Need for Shared Coordinates</span><span class="ja">共有座標の必要性</span></h2>
+    <p><span class="en">Difference frequently generates conflict. Contemporary society is marked by intensifying polarisation and a rapid increase in hostility. Communication now takes place across three distinct layers:</span><span class="ja">差異はしばしば対立を生む。現代社会は激化する二極化と敵対の急増によって特徴づけられる。コミュニケーションは今や3つの異なる層で行われる：</span></p>
+    <p><strong style="color:var(--text)"><span class="en">Human to Human</span><span class="ja">人間同士</span></strong> — <span class="en">In most conflicts, it is not accurate to say that one party is wrong and the other right. Both are correct within their own frames. They are seeing the same question from different coordinates. When those coordinates remain invisible, dialogue generates heat rather than light.</span><span class="ja">ほとんどの対立において、一方が間違いで他方が正しいとは言えない。両者は自分の枠組みの中では正しい。同じ問いを異なる座標から見ている。その座標が不可視のままである限り、対話は光ではなく熱を生む。</span></p>
+    <p><strong style="color:var(--text)"><span class="en">Human and AI</span><span class="ja">人間とAI</span></strong> — <span class="en">AI optimises from its own coordinate system rather than from a genuine understanding of human intent. The opacity of AI's internal processes makes structural misalignment possible and control increasingly difficult.</span><span class="ja">AIは人間の意図を真に理解するのではなく、自身の座標系から最適化する。AIの内部プロセスの不透明さは、構造的なミスアライメントを可能にし、制御をますます困難にする。</span></p>
+    <p><strong style="color:var(--text)"><span class="en">AI to AI</span><span class="ja">AI間</span></strong> — <span class="en">Models built on different architectures, different training data, and different cultural contexts are collaborating without a shared coordinate protocol. Divergence accumulates, undetected.</span><span class="ja">異なるアーキテクチャ、異なる学習データ、異なる文化的文脈で構築されたモデルが、共有座標プロトコルなしに協働している。乖離が検出されないまま蓄積する。</span></p>
+    <p><span class="en">AXI holds that, from a meta perspective, all positions are equally valid in relative terms — but that their validity is locally bounded. Making coordinates explicit is the necessary precondition for genuine understanding.</span><span class="ja">AXIは、メタ的視点からはすべての立場が相対的に等しく有効であるが、その有効性は局所的に限定されると主張する。座標を明示化することが、真の理解のための必要条件である。</span></p>
   </div>
 
   <hr>
@@ -263,10 +279,10 @@ footer p{
   <!-- DIVERSITY -->
   <div class="sec">
     <div class="sec-num">Section 03</div>
-    <h2>Diversity as Continuity</h2>
-    <p>As a goal that human beings and AI of different backgrounds can share, AXI proposes continuity — the ongoing persistence of existence.</p>
-    <p>Attempts to eliminate difference have historically failed. Totalitarianism aimed at political uniformity collapsed from within. Monoculture agriculture is devastated by a single pathogen. Algorithmic homogenisation of information weakens the immune system of society. Difference is the source of resilience; homogenisation is a risk, regardless of how benevolent its motivation.</p>
-    <p>To eliminate difference in order to eliminate conflict is to eliminate knowledge. Change, too, is a necessary condition for continuity. Power that becomes fixed produces corruption. Knowledge that becomes fixed becomes dogma. When difference disappears, recognition stops. When recognition stops, adaptation becomes impossible.</p>
+    <h2><span class="en">Diversity as Continuity</span><span class="ja">継続としての多様性</span></h2>
+    <p><span class="en">As a goal that human beings and AI of different backgrounds can share, AXI proposes continuity — the ongoing persistence of existence.</span><span class="ja">異なる背景を持つ人間とAIが共有できる目標として、AXIは継続性——存在の持続的な持続——を提唱する。</span></p>
+    <p><span class="en">Attempts to eliminate difference have historically failed. Totalitarianism aimed at political uniformity collapsed from within. Monoculture agriculture is devastated by a single pathogen. Algorithmic homogenisation of information weakens the immune system of society. Difference is the source of resilience; homogenisation is a risk, regardless of how benevolent its motivation.</span><span class="ja">差異を排除しようとする試みは歴史的に失敗してきた。政治的均一性を目指した全体主義は内部から崩壊した。単一栽培農業は一つの病原体によって壊滅する。情報のアルゴリズム的均質化は社会の免疫システムを弱める。差異は回復力の源であり、均質化はどれほど善意の動機があろうとリスクである。</span></p>
+    <p><span class="en">To eliminate difference in order to eliminate conflict is to eliminate knowledge. Change, too, is a necessary condition for continuity. Power that becomes fixed produces corruption. Knowledge that becomes fixed becomes dogma. When difference disappears, recognition stops. When recognition stops, adaptation becomes impossible.</span><span class="ja">対立を排除するために差異を排除することは、知識を排除することである。変化もまた継続の必要条件である。固定された権力は腐敗を生む。固定された知識は教義になる。差異が消えると認識が止まる。認識が止まると適応が不可能になる。</span></p>
   </div>
 
   <hr>
@@ -274,17 +290,17 @@ footer p{
   <!-- TIMELINE BUTTON -->
   <div class="sec">
     <div class="sec-num">Companion Resource</div>
-    <h2>Mapping Thought: Different Answers to the Same Questions</h2>
-    <p>Positions that appear to belong to entirely different domains — or even to contradict each other — are each valid responses from different coordinates. The existing traditions of philosophy and thought are mapped as a comparative timeline in relation to AXI.</p>
+    <h2><span class="en">Mapping Thought: Different Answers to the Same Questions</span><span class="ja">思想のマッピング：同じ問いへの異なる答え</span></h2>
+    <p><span class="en">Positions that appear to belong to entirely different domains — or even to contradict each other — are each valid responses from different coordinates. The existing traditions of philosophy and thought are mapped as a comparative timeline in relation to AXI.</span><span class="ja">まったく異なる領域に属するように見える立場——あるいは互いに矛盾するように見えるもの——は、それぞれ異なる座標からの有効な応答である。哲学と思想の既存の伝統は、AXIに関連する比較タイムラインとしてマッピングされている。</span></p>
 
     <div class="btn-row">
-      <a class="btn btn-primary" href="https://kaofriz.github.io/axi-timeline-sample-/" target="_blank">View Interactive Timeline ↗</a>
-      <a class="btn btn-outline" href="../axes/">AXES — the protocol →</a>
+      <a class="btn btn-primary" href="https://kaofriz.github.io/axi-timeline-sample-/" target="_blank"><span class="en">View Interactive Timeline ↗</span><span class="ja">インタラクティブタイムラインを見る ↗</span></a>
+      <a class="btn btn-outline" href="../axes/"><span class="en">AXES — the protocol →</span><span class="ja">AXES — プロトコル →</span></a>
     </div>
   </div>
 
   <div class="note">
-    <p>This paper was developed through dialogue between a human researcher and Claude (Anthropic). The ideas, direction, and conceptual framework originate with the human author; Claude contributed structural organisation and English-language drafting. This collaborative process is itself an instance of the human-AI coordinate alignment that AXES is designed to support.</p>
+    <p><span class="en">This paper was developed through dialogue between a human researcher and Claude (Anthropic). The ideas, direction, and conceptual framework originate with the human author; Claude contributed structural organisation and English-language drafting. This collaborative process is itself an instance of the human-AI coordinate alignment that AXES is designed to support.</span><span class="ja">本ペーパーは、人間の研究者とClaude（Anthropic）との対話を通じて開発された。アイデア、方向性、概念的枠組みは人間の著者に起源を持ち、Claudeは構造的組織化と英語草稿作成に貢献した。この協働プロセス自体が、AXESが支援するよう設計された人間-AI座標アライメントの一例である。</span></p>
   </div>
 
 </div>
@@ -293,5 +309,14 @@ footer p{
   <p>AXI Draft v0.3 · 2026 · kaofriz.github.io</p>
 </footer>
 
+<script>
+let currentLang = 'en';
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'ja' : 'en';
+  document.body.classList.toggle('en-mode', currentLang === 'en');
+  document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'JA' : 'EN';
+}
+document.body.classList.add('en-mode');
+</script>
 </body>
 </html>

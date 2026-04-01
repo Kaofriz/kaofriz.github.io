@@ -161,6 +161,21 @@ hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
   margin-left:10px;vertical-align:middle;
 }
 
+/* LANG TOGGLE */
+.ja { display: revert; }
+.en { display: none; }
+body.en-mode .ja { display: none; }
+body.en-mode .en { display: revert; }
+#lang-btn{
+  padding:5px 14px;border-radius:20px;
+  border:1px solid var(--border2);
+  background:transparent;color:var(--text);
+  font-family:'DM Mono',monospace;
+  font-size:.72rem;letter-spacing:.06em;
+  cursor:pointer;transition:border-color .2s,color .2s;
+}
+#lang-btn:hover{border-color:var(--teal);color:var(--teal);}
+
 /* FOOTER */
 footer{
   position:relative;z-index:1;
@@ -178,21 +193,25 @@ footer p{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--dim);}
   <div class="nav-right">
     <a href="../axi/">AXI</a>
     <a href="../axes/">AXES</a>
+    <button id="lang-btn" onclick="toggleLang()">EN</button>
   </div>
 </div>
 
 <div class="hero">
   <div class="hero-label">Lifelong Learning</div>
   <h1>AXE-L<br><em>Axes of Learning</em></h1>
-  <p class="tagline">AXIの原則を学習に応用した、学習者中心の自律的生涯学習フレームワーク。既存の専門・制度的教育を補完するものとして位置づけられる。あらゆる関心領域を学習の軸として蓄積し、軸と軸の接続によって認識が深まるという多軸的学習観に基づく。画一的な評価基準ではなく、学習者自身の関心と達成感がドライブになる。</p>
+  <p class="tagline">
+    <span class="ja">AXIの原則を学習に応用した、学習者中心の自律的生涯学習フレームワーク。既存の専門・制度的教育を補完するものとして位置づけられる。あらゆる関心領域を学習の軸として蓄積し、軸と軸の接続によって認識が深まるという多軸的学習観に基づく。画一的な評価基準ではなく、学習者自身の関心と達成感がドライブになる。</span>
+    <span class="en">A learner-centred, self-directed framework for lifelong learning, derived from AXI principles. Designed to complement existing formal and specialist education. Based on a multi-axial view of learning in which knowledge accumulates as axes across any domain of interest, and understanding deepens through the connections between them. Driven not by standardised assessment, but by the learner's own curiosity and sense of achievement.</span>
+  </p>
 </div>
 
 <div class="content">
 
   <!-- RELATED THEORIES -->
   <div class="sec">
-    <div class="sec-label">Related Concepts</div>
-    <h2>関連する学習理論・概念</h2>
+    <div class="sec-label"><span class="ja">関連概念</span><span class="en">Related Concepts</span></div>
+    <h2><span class="ja">関連する学習理論・概念</span><span class="en">Related Learning Theories & Concepts</span></h2>
     <div class="tag-wrap">
       <span class="tag">Transformative Learning</span>
       <span class="tag">Heutagogy</span>
@@ -209,20 +228,20 @@ footer p{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--dim);}
 
   <!-- PRACTICE IDEAS -->
   <div class="sec">
-    <div class="sec-label">Practice Ideas</div>
-    <h2>実践アイデア</h2>
+    <div class="sec-label"><span class="ja">実践アイデア</span><span class="en">Practice Ideas</span></div>
+    <h2><span class="ja">実践アイデア</span><span class="en">Practice Ideas</span></h2>
     <div class="practice-list">
       <div class="practice-item">
-        <h4>AI対話リフレクション</h4>
-        <p>AIとの対話を通じた思考の外在化と深化。対話ログが学習記録として機能する。</p>
+        <h4><span class="ja">AI対話リフレクション</span><span class="en">AI Dialogue Reflection</span></h4>
+        <p><span class="ja">AIとの対話を通じた思考の外在化と深化。対話ログが学習記録として機能する。</span><span class="en">Externalising and deepening thought through dialogue with AI. Interaction logs function as a learning record.</span></p>
       </div>
       <div class="practice-item">
-        <h4>Creative writing を通した思考実験</h4>
-        <p>創作実践を認識論的探求の手段として位置づける。書くことが知識獲得を駆動する逆転モデル。</p>
+        <h4><span class="ja">Creative writing を通した思考実験</span><span class="en">Thought Experiment through Creative Writing</span></h4>
+        <p><span class="ja">創作実践を認識論的探求の手段として位置づける。書くことが知識獲得を駆動する逆転モデル。</span><span class="en">Positioning creative practice as a mode of epistemological inquiry. A reversed model in which writing drives knowledge acquisition.</span></p>
       </div>
       <div class="practice-item">
-        <h4>Dodo スマートフォンアプリ <span class="status-badge">開発中</span></h4>
-        <p>日本語学習を起点としたAXE-Lの実装例。カメラによる物体認識・発音練習・語彙蓄積を統合。</p>
+        <h4>Dodo <span class="ja">スマートフォンアプリ</span><span class="en">Smartphone App</span> <span class="status-badge"><span class="ja">開発中</span><span class="en">In development</span></span></h4>
+        <p><span class="ja">日本語学習を起点としたAXE-Lの実装例。カメラによる物体認識・発音練習・語彙蓄積を統合。</span><span class="en">An implementation of AXE-L grounded in Japanese language learning. Integrates camera-based object recognition, pronunciation practice, and vocabulary accumulation.</span></p>
       </div>
     </div>
   </div>
@@ -231,11 +250,11 @@ footer p{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--dim);}
 
   <!-- PORTFOLIO -->
   <div class="sec">
-    <div class="sec-label">Portfolio Vision</div>
-    <h2>ポートフォリオ構想</h2>
+    <div class="sec-label"><span class="ja">ポートフォリオ構想</span><span class="en">Portfolio Vision</span></div>
+    <h2><span class="ja">ポートフォリオ構想</span><span class="en">Portfolio Vision</span></h2>
     <div class="portfolio-card">
-      <h4>曼陀羅マップ <span class="status-badge">構想中</span></h4>
-      <p>学習者を中心に置き、蓄積された学習の軸をバブルとして多軸的に可視化するポートフォリオ。各軸の接続がスパークを生む。Gamificationによる継続的達成感の設計を組み込む。</p>
+      <h4><span class="ja">曼陀羅マップ</span><span class="en">Mandala Map</span> <span class="status-badge"><span class="ja">構想中</span><span class="en">Concept stage</span></span></h4>
+      <p><span class="ja">学習者を中心に置き、蓄積された学習の軸をバブルとして多軸的に可視化するポートフォリオ。各軸の接続がスパークを生む。Gamificationによる継続的達成感の設計を組み込む。</span><span class="en">A portfolio that places the learner at its centre, visualising accumulated learning axes as expanding bubbles. Connections between axes generate new insight. Incorporates gamification for sustained sense of achievement.</span></p>
     </div>
   </div>
 
@@ -245,5 +264,11 @@ footer p{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--dim);}
   <p>AXE-L · kaofriz.github.io · 2026</p>
 </footer>
 
+<script>
+function toggleLang() {
+  const isEn = document.body.classList.toggle('en-mode');
+  document.getElementById('lang-btn').textContent = isEn ? 'JA' : 'EN';
+}
+</script>
 </body>
 </html>

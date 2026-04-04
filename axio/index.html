@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXIO — Axes × Operation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --navy:    #0a0f1e;
+  --navy2:   #0f172a;
+  --navy3:   #1e293b;
+  --border:  rgba(148,163,184,.15);
+  --border2: rgba(148,163,184,.28);
+  --text:    #e2e8f0;
+  --muted:   #94a3b8;
+  --dim:     #64748b;
+  --gold:    #c9a96e;
+  --gold2:   #e8c98a;
+  --blue:    #60a5fa;
+  --teal:    #2dd4bf;
+  --coral:   #fb7185;
+  --accent:  #3b82f6;
+}
+
+html{scroll-behavior:smooth;background:var(--navy)}
+body{
+  background:var(--navy);
+  color:var(--text);
+  font-family:'Inter','Meiryo','Meiryo UI','Yu Gothic UI','Segoe UI',sans-serif;
+  line-height:1.75;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(148,163,184,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(148,163,184,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;z-index:0;
+}
+
+/* ── TOPBAR ── */
+#topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,15,30,.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:56px;
+}
+.logo{
+  font-family:'DM Mono',monospace;
+  font-size:.78rem;letter-spacing:.18em;
+  color:var(--gold);text-transform:uppercase;
+  text-decoration:none;
+}
+#topbar nav{display:flex;gap:32px;align-items:center;}
+#topbar nav a{
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;
+  transition:color .2s;
+}
+#topbar nav a:hover{color:var(--text);}
+.lang-btn{
+  font-family:'DM Mono',monospace;
+  font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);
+  background:none;
+  border:1px solid var(--border2);
+  padding:4px 12px;
+  cursor:pointer;
+  transition:all .2s;
+  border-radius:2px;
+}
+.lang-btn:hover{color:var(--text);border-color:var(--border2);}
+
+/* ── HERO ── */
+.hero{
+  position:relative;z-index:1;
+  max-width:900px;margin:0 auto;
+  padding:100px 48px 80px;
+}
+.hero-label{
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:24px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-label::before{
+  content:'';display:block;
+  width:32px;height:1px;background:var(--gold);
+}
+.hero h1{
+  font-size:clamp(2rem,4.5vw,3.4rem);
+  font-weight:300;letter-spacing:.01em;
+  color:var(--text);line-height:1.2;
+  margin-bottom:12px;
+}
+.hero h1 em{
+  font-style:italic;color:var(--gold);font-weight:300;
+}
+.hero .tagline{
+  font-size:.95rem;font-weight:300;
+  color:var(--muted);margin-top:20px;
+  max-width:620px;line-height:1.85;
+}
+.hero-meta{
+  margin-top:32px;
+  display:flex;gap:16px;flex-wrap:wrap;
+}
+.hero-meta span{
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;letter-spacing:.1em;
+  color:var(--dim);
+  border:1px solid var(--border2);
+  padding:4px 12px;border-radius:2px;
+}
+
+/* ── DIVIDER ── */
+.divider{
+  max-width:900px;margin:0 auto;
+  border:none;border-top:1px solid var(--border);
+}
+
+/* ── SECTION ── */
+.section{
+  position:relative;z-index:1;
+  max-width:900px;margin:0 auto;
+  padding:64px 48px;
+}
+.sec-label{
+  font-family:'DM Mono',monospace;
+  font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:10px;
+}
+.sec-title{
+  font-size:1.5rem;font-weight:300;
+  color:var(--text);letter-spacing:.03em;
+  margin-bottom:40px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--border);
+}
+
+/* ── LEAD BLOCK ── */
+.lead-block{
+  background:var(--navy2);
+  border:1px solid var(--border);
+  border-left:2px solid var(--gold);
+  padding:28px 32px;
+  margin-bottom:32px;
+  border-radius:2px;
+}
+.lead-block p{
+  font-size:1.05rem;font-weight:300;
+  color:var(--text);line-height:1.85;
+}
+.lead-block .ja{
+  display:block;
+  font-size:.88rem;color:var(--muted);
+  margin-top:10px;line-height:1.8;
+}
+
+/* ── BODY TEXT ── */
+.body-p{
+  font-size:.93rem;font-weight:300;
+  color:var(--muted);line-height:1.9;
+  margin-bottom:18px;
+  max-width:680px;
+}
+.body-p .ja{
+  display:block;font-size:.85rem;
+  color:var(--dim);margin-top:6px;
+}
+.body-p strong{color:var(--text);font-weight:500;}
+
+/* ── QUOTE ── */
+.quote{
+  border-left:1px solid var(--gold);
+  padding:4px 0 4px 20px;
+  margin:24px 0;
+  font-size:.95rem;font-weight:300;
+  color:var(--text);line-height:1.85;
+  max-width:640px;
+}
+.quote .ja{
+  display:block;font-size:.83rem;
+  color:var(--muted);margin-top:8px;line-height:1.75;
+}
+
+/* ── FAMILY TREE ── */
+.family-tree{
+  background:var(--navy2);
+  border:1px solid var(--border);
+  padding:24px 28px;
+  border-radius:2px;
+  margin:24px 0;
+  font-family:'DM Mono',monospace;
+  font-size:.78rem;
+  line-height:2.4;
+  color:var(--dim);
+}
+.family-tree .current{
+  color:var(--gold);font-weight:500;
+  font-size:.85rem;
+}
+.family-tree .label{
+  color:var(--dim);font-size:.7rem;
+}
+
+/* ── STEP LIST ── */
+.step-list{
+  list-style:none;
+  counter-reset:step;
+  border:1px solid var(--border);
+  border-radius:2px;
+  overflow:hidden;
+  margin:24px 0;
+}
+.step-list li{
+  counter-increment:step;
+  display:flex;gap:20px;
+  padding:20px 24px;
+  background:var(--navy2);
+  border-bottom:1px solid var(--border);
+  font-size:.88rem;line-height:1.75;
+  color:var(--muted);
+  align-items:flex-start;
+}
+.step-list li:last-child{border-bottom:none;}
+.step-list li::before{
+  content:counter(step,decimal-leading-zero);
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;letter-spacing:.08em;
+  color:var(--gold);
+  flex-shrink:0;
+  padding-top:3px;
+  min-width:24px;
+}
+.step-list li strong{color:var(--text);font-weight:500;}
+.step-list li .ja{
+  display:block;font-size:.8rem;
+  color:var(--dim);margin-top:4px;
+}
+
+/* ── TABLE ── */
+table{
+  width:100%;border-collapse:collapse;
+  font-size:.83rem;margin:20px 0;
+  border:1px solid var(--border);
+  border-radius:2px;overflow:hidden;
+}
+th{
+  text-align:left;
+  padding:12px 18px;
+  background:var(--navy3);
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--dim);font-weight:400;
+  border-bottom:1px solid var(--border2);
+}
+td{
+  padding:16px 18px;
+  border-bottom:1px solid var(--border);
+  line-height:1.7;
+  vertical-align:top;
+  color:var(--muted);
+  background:var(--navy2);
+}
+tr:last-child td{border-bottom:none;}
+td strong{color:var(--text);font-weight:500;}
+td .ja{display:block;font-size:.78rem;color:var(--dim);margin-top:6px;}
+
+/* ── RESEARCH QUESTIONS ── */
+.rq-list{
+  list-style:none;
+  border:1px solid var(--border);
+  border-radius:2px;overflow:hidden;
+  margin:20px 0;
+}
+.rq-list li{
+  padding:18px 24px;
+  background:var(--navy2);
+  border-bottom:1px solid var(--border);
+  font-size:.88rem;line-height:1.75;
+  color:var(--muted);
+  display:flex;gap:16px;
+  align-items:flex-start;
+}
+.rq-list li:last-child{border-bottom:none;}
+.rq-list li::before{
+  content:'—';
+  color:var(--gold);
+  flex-shrink:0;
+  font-family:'DM Mono',monospace;
+  font-size:.8rem;
+}
+.rq-list li .ja{
+  display:block;font-size:.8rem;
+  color:var(--dim);margin-top:4px;
+}
+
+/* ── REFERENCE LIST ── */
+.ref-list{
+  list-style:none;
+  display:flex;flex-direction:column;gap:1px;
+  border:1px solid var(--border);
+  border-radius:2px;overflow:hidden;
+  margin:20px 0;
+}
+.ref-item{
+  background:var(--navy2);
+  padding:18px 24px;
+  border-bottom:1px solid var(--border);
+  display:flex;gap:20px;align-items:flex-start;
+}
+.ref-item:last-child{border-bottom:none;}
+.ref-tag{
+  font-family:'DM Mono',monospace;
+  font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 10px;border-radius:2px;
+  flex-shrink:0;margin-top:2px;
+  white-space:nowrap;
+}
+.ref-tag.prior{background:rgba(96,165,250,.1);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
+.ref-tag.axio{background:rgba(201,169,110,.1);color:var(--gold);border:1px solid rgba(201,169,110,.2);}
+.ref-tag.context{background:rgba(45,212,191,.1);color:var(--teal);border:1px solid rgba(45,212,191,.2);}
+.ref-content{}
+.ref-content .ref-title{
+  font-size:.88rem;font-weight:400;
+  color:var(--text);line-height:1.5;
+  margin-bottom:4px;
+}
+.ref-content .ref-meta{
+  font-family:'DM Mono',monospace;
+  font-size:.72rem;color:var(--dim);
+  line-height:1.6;
+}
+.ref-content .ref-note{
+  font-size:.78rem;color:var(--muted);
+  margin-top:6px;line-height:1.65;
+}
+.ref-content a{color:var(--blue);text-decoration:none;}
+.ref-content a:hover{text-decoration:underline;}
+
+/* ── FOOTER ── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  padding:36px 48px;
+  max-width:900px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+footer p{
+  font-family:'DM Mono',monospace;
+  font-size:.65rem;color:var(--dim);
+  letter-spacing:.06em;line-height:1.8;
+}
+footer a{color:var(--dim);text-decoration:none;}
+footer a:hover{color:var(--muted);}
+
+/* ── LANG TOGGLE ── */
+body.ja .ja{color:inherit!important;}
+.ja-text{display:none;}
+body.ja .ja-text{display:inline;}
+.en-text{display:inline;}
+body.ja .en-text{display:none;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero{animation:fadeUp .7s ease both;}
+
+@media(max-width:640px){
+  #topbar{padding:0 20px;}
+  .hero,.section{padding-left:20px;padding-right:20px;}
+  footer{padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <a class="logo" href="https://kaofriz.github.io/">KF</a>
+  <nav>
+    <a href="https://kaofriz.github.io/axi/">AXI</a>
+    <a href="https://kaofriz.github.io/axes/">AXES</a>
+    <a href="https://kaofriz.github.io/axe-l/">AXE-L</a>
+    <button class="lang-btn" onclick="toggleLang()" id="langBtn">JA</button>
+  </nav>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">AXI Framework · Fourth Pillar</div>
+  <h1>AXIO<br><em>Axes × Operation</em></h1>
+  <p class="tagline">
+    <span class="en-text">The theory and practice of cross-domain structural connection and meaning generation through intentional multi-axis zoom operations in conceptual space.</span>
+    <span class="ja-text">概念空間における多軸的ズームイン・ズームアウト操作を通じて、異領域の構造的接続と意味生成を行う認識論的実践とその理論体系。</span>
+  </p>
+  <div class="hero-meta">
+    <span>Draft v0.1</span>
+    <span>April 2026</span>
+    <span>AXI Framework</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- SECTION 00: POSITION -->
+<div class="section" id="position">
+  <div class="sec-label">Section 00</div>
+  <h2 class="sec-title">
+    <span class="en-text">Position in the AX Family</span>
+    <span class="ja-text">AXファミリーにおける位置づけ</span>
+  </h2>
+
+  <div class="family-tree">
+    <div>AXI &nbsp;<span class="label">— Philosophical foundation · 哲学的基盤</span></div>
+    <div style="padding-left:16px;opacity:.3;">└</div>
+    <div style="padding-left:24px;">AXES &nbsp;<span class="label">— Epistemic protocol · 認識座標プロトコル</span></div>
+    <div style="padding-left:16px;opacity:.3;">└</div>
+    <div style="padding-left:24px;">AXE-L &nbsp;<span class="label">— Lifelong learning system · 生涯学習設計</span></div>
+    <div style="padding-left:40px;opacity:.3;">├ &nbsp;<span class="label">Motivation layer: PPLT · 動機層</span></div>
+    <div style="padding-left:40px;opacity:.3;">└</div>
+    <div style="padding-left:56px;" class="current">AXIO &nbsp;<span class="label">← here · Operation layer · 操作層</span></div>
+  </div>
+
+  <p class="body-p">
+    <span class="en-text">AXIO serves a dual role. As the core operational skill of AXE-L: the practice through which cross-domain connections are formed in lifelong learning. As an independent epistemological theory: describing and designing how meaning emerges from structural analogy.</span>
+    <span class="ja-text">AXIOはAXフレームワーク内で二重の役割を担う。AXE-Lの核心操作スキルとして：生涯学習における異領域接続の実践。独立した認識論的理論として：構造的アナロジーから意味がどう生まれるかの記述と設計。</span>
+  </p>
+</div>
+
+<hr class="divider">
+
+<!-- SECTION 01: DEFINITION -->
+<div class="section" id="definition">
+  <div class="sec-label">Section 01</div>
+  <h2 class="sec-title">
+    <span class="en-text">Definition: Computation, Not Synthesis</span>
+    <span class="ja-text">定義：まとめではなく演算</span>
+  </h2>
+
+  <div class="lead-block">
+    <p>
+      <span class="en-text">AXIO is not a synthesis of existing theories. It abstracts structural patterns from disparate domains and generates propositions that exceed the sum of their sources. The distinction from synthesis lies in the dimensional difference between input and output.</span>
+      <span class="ja-text">AXIOは既存の学術理論の「まとめ」ではない。各領域の構造を抽象化し、その共通構造から各領域では言われていなかった新しい命題を生成する——これが演算（Operation）である。「まとめ」との区別は入力と出力の次元の差にある。</span>
+    </p>
+  </div>
+
+  <p class="body-p">
+    <span class="en-text">This is analogous to the discovery in gluon amplitude theory (arXiv:2602.12176): the amplitude was always present; choosing the half-collinear configuration in Klein space revealed what standard coordinates made invisible. The choice of locality generated the axis that made the discovery possible. Purpose generated locality; locality demanded the axis.</span>
+    <span class="ja-text">これはグルーオン散乱振幅の発見（arXiv:2602.12176）と同型である：振幅は常に存在していた。Klein空間のハーフコリニア配置を選ぶことで、標準座標系では不可視だったものが現れた。目的が局を生成し、局が軸を要請した。</span>
+  </p>
+
+  <div class="quote">
+    <span class="en-text">AXIO operates not as synthesis but as computation: abstracting structural patterns from disparate domains and generating propositions that exceed the sum of their sources.</span>
+    <span class="ja-text">AXIOはまとめとしてではなく演算として作動する：異領域から構造的パターンを抽象化し、各領域の総和を超える命題を生成する。</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- SECTION 02: OPERATION CYCLE -->
+<div class="section" id="cycle">
+  <div class="sec-label">Section 02</div>
+  <h2 class="sec-title">
+    <span class="en-text">The Operation Cycle</span>
+    <span class="ja-text">演算サイクル</span>
+  </h2>
+
+  <p class="body-p">
+    <span class="en-text">AXIO operates as a five-step cycle. Each completed pass raises the resolution of the next. The cycle is structurally isomorphic with the circular recognition process in Projection Science (Suzuki 2015): recognition upgrades by adding filters with each iteration. AXIO designs that natural process as intentional operation.</span>
+    <span class="ja-text">AXIOは五段階の循環として作動する。各サイクルの完了が次のサイクルの解像度を上げる。このサイクルはプロジェクション・サイエンス（鈴木 2015）の循環する認識プロセスと構造的に同型である：認識はフィルターを追加しながらバージョンアップされる。AXIOはその自然なプロセスを意図的操作として設計する。</span>
+  </p>
+
+  <ol class="step-list">
+    <li>
+      <div>
+        <strong><span class="en-text">Zoom out</span><span class="ja-text">ズームアウト</span></strong>
+        <span class="en-text"> — Activate the purpose anchor. View domains as structure, suspending domain-specific vocabulary and prior judgments.</span>
+        <span class="ja-text">：目的アンカーを活性化し、専門語彙と既存判断を保留して領域を構造として見る。</span>
+        <span class="ja"><br><span class="en-text" style="display:none;"></span></span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong><span class="en-text">Pattern recognition</span><span class="ja-text">パターン認識</span></strong>
+        <span class="en-text"> — Detect structural isomorphism across domains. Analogy in Gentner's sense: relational correspondence, not surface similarity.</span>
+        <span class="ja-text">：異領域間の構造的同型性を検出する。Gentner的意味でのアナロジー：表面的類似ではなく関係構造の対応。</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong><span class="en-text">Abduction</span><span class="ja-text">アブダクション</span></strong>
+        <span class="en-text"> — Generate the connection hypothesis: "therefore this might be so." The candidate proposition that exceeds what either domain stated alone.</span>
+        <span class="ja-text">：「だからこうかもしれない」という接続仮説を生成する。どちらの領域単独では言われていなかった候補命題。</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong><span class="en-text">Zoom in</span><span class="ja-text">ズームイン</span></strong>
+        <span class="en-text"> — Descend the connection into a specific domain. Generate the new proposition in usable, domain-legible form.</span>
+        <span class="ja-text">：接続を特定の領域に降ろす。使用可能・領域可読な形で新命題を生成する。</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong><span class="en-text">Meaning judgment</span><span class="ja-text">意味判断</span></strong>
+        <span class="en-text"> — Evaluate the proposition against the purpose anchor. Does this connection serve the purpose? This step requires human judgment; AI cannot substitute for it.</span>
+        <span class="ja-text">：目的アンカーに照らして命題を評価する。この接続は目的に資するか。このステップは人間の判断を必要とする——AIはここを代替できない。</span>
+      </div>
+    </li>
+  </ol>
+</div>
+
+<hr class="divider">
+
+<!-- SECTION 03: THEORETICAL FOUNDATIONS -->
+<div class="section" id="foundations">
+  <div class="sec-label">Section 03</div>
+  <h2 class="sec-title">
+    <span class="en-text">Theoretical Foundations</span>
+    <span class="ja-text">理論的基盤</span>
+  </h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th><span class="en-text">Source</span><span class="ja-text">出典</span></th>
+        <th><span class="en-text">Contribution to AXIO</span><span class="ja-text">AXIOへの寄与</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Gärdenfors (2000)</strong><br><span style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--dim);">Conceptual Spaces</span></td>
+        <td>
+          <span class="en-text">Axis = quality dimension; concept = convex region. Formal basis for "computation on conceptual space." Source of <em>Epistemic computation</em>.</span>
+          <span class="ja-text">軸＝質的次元、概念＝凸領域。「概念空間上の演算」の形式的基盤。Epistemic computationの起源。</span>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Gentner (1983)</strong><br><span style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--dim);">Structure-Mapping Theory</span></td>
+        <td>
+          <span class="en-text">Analogy as relational correspondence, not surface similarity. Cognitive science basis for the pattern recognition step of the AXIO cycle.</span>
+          <span class="ja-text">アナロジーは表面的類似でなく関係構造の対応。AXIOサイクルのパターン認識ステップの認知科学的根拠。</span>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Suzuki (2015)</strong><br><span style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--dim);">Projection Science</span></td>
+        <td>
+          <span class="en-text">Circular recognition process; recognition upgrades via filter addition each pass. Cognitive science description of the AXIO operation cycle.</span>
+          <span class="ja-text">循環する認識プロセスとフィルター追加による認識のバージョンアップ。AXIOサイクルの認知科学的記述。</span>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Kubo-Kawai (2022)</strong><br><span style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--dim);">「推し」の科学</span></td>
+        <td>
+          <span class="en-text">Projection as a universal cognitive mechanism: projecting internal representations onto external objects. Grounds the motivation layer (PPLT) that activates the AXIO sensor.</span>
+          <span class="ja-text">プロジェクションは普遍的な認知メカニズム：内部表象を外部対象に重ね合わせる。AXIOセンサーを活性化する動機層（PPLT）を根拠づける。</span>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Transdisciplinary research</strong><br><span style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--dim);">Piaget, Nicolescu</span></td>
+        <td>
+          <span class="en-text">Recognises structural isomorphism across disciplines as a foundation for unified knowledge. AXIO's difference: designed as the internal cognitive skill of one practitioner, not multi-expert collaboration.</span>
+          <span class="ja-text">異領域構造的同型性を統一知識の基盤として認識する。AXIOの差分：複数専門家の協働ではなく一人の認識者の内的操作スキルとして設計する。</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- SECTION 04: CONDITIONS -->
+<div class="section" id="conditions">
+  <div class="sec-label">Section 04</div>
+  <h2 class="sec-title">
+    <span class="en-text">Conditions and Obstacles</span>
+    <span class="ja-text">習得の条件と阻害要因</span>
+  </h2>
+
+  <p class="body-p">
+    <span class="en-text">AXIO has teachable procedural components and required attitudinal foundations. The greatest obstacle is not lack of knowledge but fixation of perspective — the epistemic spell of the Aristotelian disciplinary taxonomy.</span>
+    <span class="ja-text">AXIOは操作手順として教えられる部分と、態度的基盤として必要な部分がある。最大の阻害要因は知識の欠如ではなく視座の固定——アリストテレス的分類体系が生み出した認識の呪縛——である。</span>
+  </p>
+
+  <p class="body-p">
+    <span class="en-text">Paradoxically, those with deep expertise benefit most after acquisition — because specialist knowledge becomes the computational material of AXIO. The specialist who acquires AXIO operations can use their domain knowledge as raw material for cross-domain structural mapping.</span>
+    <span class="ja-text">逆説的に、深い専門知識を持つ者こそ習得後の効果が最大になる——専門知識がAXIOの「演算素材」になるから。AXIOを習得した専門家は、自分の専門知識を異領域構造マッピングの素材として使えるようになる。</span>
+  </p>
+
+  <div class="quote">
+    <span class="en-text">The primary obstacle: the fixation of self-projection as "an expert in field X." This is the same mechanism that prevented Socrates' interlocutors from hearing his questions. It is not a lack of knowledge — it is a fixation of coordinate perspective.</span>
+    <span class="ja-text">最大の阻害要因：「X分野の専門家である」という自己投影の固定化。これはソクラテスの対話者たちが彼の問いを聞けなかったのと同じメカニズム。知識の欠如ではなく、座標的視点の固定である。</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- SECTION 05: AI SUPPORT -->
+<div class="section" id="ai">
+  <div class="sec-label">Section 05</div>
+  <h2 class="sec-title">
+    <span class="en-text">Epistemic Computation and AI Support</span>
+    <span class="ja-text">Epistemic ComputationとAI支援</span>
+  </h2>
+
+  <p class="body-p">
+    <span class="en-text"><strong>Epistemic computation</strong> — computation that operates on language and concepts as material, transforming structural relationships to generate new meaning. Potentially formalizable as operations on Gärdenfors' conceptual spaces.</span>
+    <span class="ja-text"><strong>Epistemic computation（認識論的演算）</strong>：言語・概念を素材として構造的関係を操作・変換し、新しい意味を生成する演算。Gärdenforsの概念空間上の操作として形式化できる可能性がある。</span>
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th><span class="en-text">Role</span><span class="ja-text">役割</span></th>
+        <th>AI</th>
+        <th><span class="en-text">Human</span><span class="ja-text">人間</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="en-text">Strength</span><span class="ja-text">強み</span></td>
+        <td><span class="en-text">Large-scale cross-domain pattern generation</span><span class="ja-text">大規模な異領域パターン生成</span></td>
+        <td><span class="en-text">Purpose anchor; meaning judgment</span><span class="ja-text">目的アンカー；意味判断</span></td>
+      </tr>
+      <tr>
+        <td><span class="en-text">Limitation</span><span class="ja-text">限界</span></td>
+        <td><span class="en-text">No purpose anchor → cannot evaluate meaning</span><span class="ja-text">目的アンカーなし→意味評価不可</span></td>
+        <td><span class="en-text">Limited cross-domain scan range</span><span class="ja-text">異領域スキャン範囲が限られる</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="body-p">
+    <span class="en-text">This division mirrors the human × AI collaboration in the gluon paper (arXiv:2602.12176): the human researcher set the locality; the AI computed within it. AI dialogue also functions as AXIO infrastructure for <strong>capture → deepening → recording</strong>: immediately developing connections triggered by the sensor and preserving them as retrievable knowledge.</span>
+    <span class="ja-text">この分業はグルーオン論文（arXiv:2602.12176）の人間×AI協働と同型である：人間研究者が局を設定し、AIがその中で計算した。AI対話はまた、AXIOの<strong>捕捉→深化→記録</strong>インフラとして機能する：センサーが反応した接続を即座に深化させ、検索可能な知識として記録に残す。</span>
+  </p>
+
+  <p class="body-p" style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--dim);">
+    <span class="en-text">Working hypothesis (requires verification): Specialist alone &lt; AI alone &lt; AXIO practitioner alone &lt; <strong style="color:var(--gold);">Specialist × AI support</strong></span>
+    <span class="ja-text">仮説（検証必要）：専門家単独 &lt; AI単独 &lt; AXIO習得者単独 &lt; <strong style="color:var(--gold);">専門家 × AI支援</strong></span>
+  </p>
+</div>
+
+<hr class="divider">
+
+<!-- SECTION 06: OPEN QUESTIONS -->
+<div class="section" id="questions">
+  <div class="sec-label">Section 06</div>
+  <h2 class="sec-title">
+    <span class="en-text">Open Questions</span>
+    <span class="ja-text">未解決の問い</span>
+  </h2>
+
+  <p class="body-p">
+    <span class="en-text">AXIO is proposed here as a structural framework, not a validated theory. The following questions are explicitly delegated to specialists in each relevant field.</span>
+    <span class="ja-text">AXIOはここでは構造的枠組みとして提案される——検証済みの理論としてではない。以下の問いは各関連分野の専門家に明示的に委ねられる。</span>
+  </p>
+
+  <ul class="rq-list">
+    <li>
+      <div>
+        <span class="en-text">Can the AXIO operation cycle be empirically validated in cognitive science, in relation to Gentner, Gärdenfors, and Projection Science?</span>
+        <span class="ja-text">AXIOの演算サイクルはGentner・Gärdenfors・プロジェクション・サイエンスとの接続において認知科学的に実証できるか。</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <span class="en-text">Can Epistemic computation be formally defined as operations on Gärdenfors' conceptual spaces?</span>
+        <span class="ja-text">Epistemic computationはGärdenforsの概念空間上の操作として形式的に定義できるか。</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <span class="en-text">Can the advantage of Specialist × AI support in AXIO operations be experimentally demonstrated?</span>
+        <span class="ja-text">AXIO操作における専門家×AI支援の優位性は実験的に示せるか。</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <span class="en-text">What intervention design can address the obstacle of "fixed self-projection" in specialists? (Delegation to educational psychology.)</span>
+        <span class="ja-text">専門家における「自己投影の固定化」という阻害要因への介入設計は何か。（教育心理学への委託。）</span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <span class="en-text">What are the mastery model and evaluation criteria for AXIO as a trainable skill within AXE-L?</span>
+        <span class="ja-text">AXE-L内のトレーニング可能なスキルとしてのAXIOの習熟モデルと評価基準は何か。</span>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<!-- SECTION 07: REFERENCES -->
+<div class="section" id="references">
+  <div class="sec-label">Section 07</div>
+  <h2 class="sec-title">
+    <span class="en-text">References and Related Research</span>
+    <span class="ja-text">参照文献・関連研究</span>
+  </h2>
+
+  <ul class="ref-list">
+
+    <li class="ref-item">
+      <span class="ref-tag prior">Prior</span>
+      <div class="ref-content">
+        <div class="ref-title">Gärdenfors, P. (2000). <em>Conceptual Spaces: The Geometry of Thought.</em> MIT Press.</div>
+        <div class="ref-meta">Cognitive science · Lund University</div>
+        <div class="ref-note">
+          <span class="en-text">Formal basis for AXIO's "computation on conceptual space." Axis = quality dimension; concept = convex region. Source of Epistemic computation.</span>
+          <span class="ja-text">AXIOの「概念空間上の演算」の形式的基盤。軸＝質的次元、概念＝凸領域。Epistemic computationの起源。</span>
+        </div>
+      </div>
+    </li>
+
+    <li class="ref-item">
+      <span class="ref-tag prior">Prior</span>
+      <div class="ref-content">
+        <div class="ref-title">Gentner, D. (1983). Structure-mapping: A theoretical framework for analogy. <em>Cognitive Science, 7</em>(2), 155–170.</div>
+        <div class="ref-meta">Cognitive science · Northwestern University</div>
+        <div class="ref-note">
+          <span class="en-text">Analogy as relational correspondence, not surface similarity. Cognitive science basis for the pattern recognition step.</span>
+          <span class="ja-text">アナロジーは表面的類似でなく関係構造の対応。パターン認識ステップの認知科学的根拠。</span>
+        </div>
+      </div>
+    </li>
+
+    <li class="ref-item">
+      <span class="ref-tag prior">Prior</span>
+      <div class="ref-content">
+        <div class="ref-title">Suzuki, H. (Ed.) (2020). <em>Projection Science: Third-Generation Cognitive Science.</em> Kindai Kagakusha.</div>
+        <div class="ref-meta">Cognitive science · Aoyama Gakuin University · 近代科学社</div>
+        <div class="ref-note">
+          <span class="en-text">Circular recognition process; recognition upgrades via filter addition. Cognitive science description of the AXIO cycle. Proposed 2015; collected volume 2020.</span>
+          <span class="ja-text">循環する認識プロセスとフィルター追加による認識のバージョンアップ。AXIOサイクルの認知科学的記述。2015年提唱、2020年論文集。</span>
+        </div>
+      </div>
+    </li>
+
+    <li class="ref-item">
+      <span class="ref-tag prior">Prior</span>
+      <div class="ref-content">
+        <div class="ref-title">Kubo-Kawai, N. (2022). <em>The Science of "Oshi": What is Projection Science.</em> Shueisha Shinsho.</div>
+        <div class="ref-meta">Developmental psychology · Aichi Shukutoku University · 集英社新書</div>
+        <div class="ref-note">
+          <span class="en-text">Projection as universal cognitive mechanism. Grounds the PPLT motivation layer that activates the AXIO sensor. Also: Kubo-Kawai (2024). <em>Imaginary Negative.</em> Shueisha Shinsho.</span>
+          <span class="ja-text">プロジェクションを普遍的な認知メカニズムとして記述。AXIOセンサーを活性化するPPLT動機層を根拠づける。関連：久保（川合）南海子（2024）『イマジナリー・ネガティブ』集英社新書。</span>
+        </div>
+      </div>
+    </li>
+
+    <li class="ref-item">
+      <span class="ref-tag prior">Prior</span>
+      <div class="ref-content">
+        <div class="ref-title">Jiralerspong, T. & Bricken, T. (2026). Cross-Architecture Model Diffing with Crosscoders. <em>arXiv:2602.11729.</em></div>
+        <div class="ref-meta">AI interpretability · Anthropic · <a href="https://arxiv.org/abs/2602.11729" target="_blank">arXiv ↗</a> · <a href="https://www.anthropic.com/research/diff-tool" target="_blank">Anthropic blog ↗</a></div>
+        <div class="ref-note">
+          <span class="en-text">LLM feature space is coordinate-dependent: DFC reveals features invisible to standard methods. Technical instantiation of "coordinate system determines what exists." CCP alignment and American exceptionalism features found unsupervised.</span>
+          <span class="ja-text">LLM特徴空間は座標系依存：DFCが標準手法では不可視の特徴を発見。「座標系が存在を決定する」の技術的実例。CCPアラインメント・アメリカ例外主義特徴を教師なしで発見。</span>
+        </div>
+      </div>
+    </li>
+
+    <li class="ref-item">
+      <span class="ref-tag prior">Prior</span>
+      <div class="ref-content">
+        <div class="ref-title">Single-minus gluon tree amplitudes are nonzero. (2026). <em>arXiv:2602.12176.</em></div>
+        <div class="ref-meta">Physics · OpenAI, Harvard, Cambridge collaboration · <a href="https://arxiv.org/abs/2602.12176" target="_blank">arXiv ↗</a></div>
+        <div class="ref-note">
+          <span class="en-text">Half-collinear configuration in Klein space reveals amplitudes invisible in standard momentum space. Physical instantiation of "purpose generates locality; locality demands axis." Human × AI collaboration model: human sets locality, AI computes.</span>
+          <span class="ja-text">Klein空間のハーフコリニア配置が標準運動量空間では不可視の振幅を明らかにする。「目的が局を生成し、局が軸を要請する」の物理的実例。人間が局を設定しAIが計算するという協働モデル。</span>
+        </div>
+      </div>
+    </li>
+
+    <li class="ref-item">
+      <span class="ref-tag prior">Prior</span>
+      <div class="ref-content">
+        <div class="ref-title">Parker, W.S. (2024). The Epistemic Projection Approach to Values in Science. <em>Philosophy of Science, 91</em>(1), 18–36.</div>
+        <div class="ref-meta">Philosophy of science · <a href="https://doi.org/10.1017/psa.2023.107" target="_blank">DOI ↗</a></div>
+        <div class="ref-note">
+          <span class="en-text">Nonepistemic aims are mapped to epistemic research problems (epistemic projection). Philosophical precedent for "purpose generates locality" in research design.</span>
+          <span class="ja-text">非認識論的目的を認識論的研究問題にマッピングする（認識論的投影）。研究設計における「目的が局を生成する」の哲学的先行議論。</span>
+        </div>
+      </div>
+    </li>
+
+    <li class="ref-item">
+      <span class="ref-tag axio">AXI</span>
+      <div class="ref-content">
+        <div class="ref-title">Frizelle, K. (2026). AXES: Axes of Epistemic System. <em>Zenodo.</em> v0.6.</div>
+        <div class="ref-meta"><a href="https://zenodo.org/records/19264332" target="_blank">DOI: 10.5281/zenodo.19264332 ↗</a></div>
+        <div class="ref-note">
+          <span class="en-text">AXIO's parent protocol. AXES makes epistemic coordinates visible; AXIO operates on them across domains.</span>
+          <span class="ja-text">AXIOの親プロトコル。AXESが認識座標を可視化し、AXIOがそれを異領域にわたって操作する。</span>
+        </div>
+      </div>
+    </li>
+
+    <li class="ref-item">
+      <span class="ref-tag context">Context</span>
+      <div class="ref-content">
+        <div class="ref-title">Sandler, J. (2018). <em>Projection, Identification, Projective Identification.</em> (1st ed.) Karnac Books.</div>
+        <div class="ref-meta">Psychoanalysis · London</div>
+        <div class="ref-note">
+          <span class="en-text">Psychoanalytic definition of projection as defence mechanism. Contrasted with Gärdenfors/Suzuki cognitive use: AXIO adopts the cognitive science definition, not the psychoanalytic one.</span>
+          <span class="ja-text">防衛機制としての投影の精神分析的定義。Gärdenfors/鈴木の認知科学的用法との対比：AXIOは精神分析的定義ではなく認知科学的定義を採用する。</span>
+        </div>
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+<footer>
+  <p>
+    AXIO · AXI Framework · Kaori Frizelle · kaofriz.github.io · 2026<br>
+    <span class="en-text">Draft theory developed through dialogue with Claude (Anthropic). Ideas and conceptual framework originate with the human author.</span>
+    <span class="ja-text">草稿理論はClaude（Anthropic）との対話を通じて開発された。アイデアと概念的枠組みは人間の著者に起源を持つ。</span>
+  </p>
+  <p>
+    <a href="https://kaofriz.github.io/axi/">AXI</a> ·
+    <a href="https://kaofriz.github.io/axes/">AXES</a> ·
+    <a href="https://kaofriz.github.io/axe-l/">AXE-L</a>
+  </p>
+</footer>
+
+<script>
+  let isJa = false;
+  function toggleLang() {
+    isJa = !isJa;
+    document.body.classList.toggle('ja', isJa);
+    document.getElementById('langBtn').textContent = isJa ? 'EN' : 'JA';
+  }
+</script>
+
+</body>
+</html>

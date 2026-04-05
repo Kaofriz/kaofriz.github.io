@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Mandala — AXE-L Knowledge Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=DM+Mono:wght@300;400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a0f1e;--navy2:#0f172a;--navy3:#1e293b;
+  --border:rgba(148,163,184,.15);--border2:rgba(148,163,184,.25);
+  --text:#e2e8f0;--muted:#94a3b8;--dim:#64748b;
+  --gold:#c9a96e;--gold2:#e8c98a;
+  --blue:#60a5fa;--teal:#2dd4bf;--coral:#fb7185;--violet:#a78bfa;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);}
+body{font-family:'Inter','Noto Serif JP',sans-serif;color:var(--text);}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(148,163,184,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(148,163,184,.025) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;z-index:0;
+}
+
+/* ── TOPBAR ── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;height:52px;
+  background:rgba(10,15,30,.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:16px;padding:0 24px;
+}
+.t-logo{
+  font-family:'DM Mono',monospace;font-size:.75rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--gold);
+  white-space:nowrap;text-decoration:none;
+}
+.t-sep{color:var(--border2);font-size:.8rem;}
+.t-label{
+  font-family:'DM Mono',monospace;font-size:.62rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+}
+.t-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.view-group{
+  display:flex;border:1px solid var(--border2);border-radius:4px;overflow:hidden;
+}
+.vbtn{
+  font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:5px 12px;border:none;
+  background:transparent;color:var(--dim);cursor:pointer;transition:all .15s;
+}
+.vbtn.active{background:rgba(201,169,110,.15);color:var(--gold);}
+.vbtn:hover:not(.active){color:var(--text);}
+.lang-btn{
+  font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.12em;
+  padding:5px 12px;border:1px solid var(--border2);border-radius:4px;
+  background:transparent;color:var(--dim);cursor:pointer;transition:all .15s;
+}
+.lang-btn:hover{color:var(--text);border-color:var(--muted);}
+.t-link{
+  font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);text-decoration:none;
+  padding:5px 10px;transition:color .15s;
+}
+.t-link:hover{color:var(--gold);}
+
+/* ── VIEWS ── */
+#wrap{position:fixed;top:52px;left:0;right:0;bottom:0;z-index:1;overflow:hidden;}
+canvas{display:block;width:100%;height:100%;}
+
+/* List & Grid views */
+#listWrap,#gridWrap{
+  display:none;position:absolute;inset:0;overflow-y:auto;
+  padding:32px 40px 80px;
+}
+.view-header{
+  font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:24px;
+  padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+/* List */
+.list-item{
+  display:flex;gap:20px;align-items:flex-start;
+  padding:18px 0;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:opacity .15s;
+}
+.list-item:hover{opacity:.8;}
+.li-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.li-body{flex:1;}
+.li-type{
+  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:4px;
+}
+.li-title{font-size:.95rem;font-weight:400;color:var(--text);margin-bottom:4px;line-height:1.4;}
+.li-summary{font-size:.8rem;color:var(--muted);line-height:1.7;}
+.li-cat{
+  font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;
+  padding:2px 8px;border-radius:2px;border:1px solid var(--border);color:var(--dim);
+  white-space:nowrap;margin-top:4px;align-self:flex-start;
+}
+/* Grid */
+#gridWrap{display:none;}
+.grid-inner{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:12px;
+}
+.grid-card{
+  background:var(--navy2);border:1px solid var(--border);border-radius:4px;
+  padding:20px;cursor:pointer;transition:background .15s,border-color .15s;
+  position:relative;overflow:hidden;
+}
+.grid-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--card-accent,var(--blue));transform:scaleX(0);
+  transform-origin:left;transition:transform .25s;
+}
+.grid-card:hover{background:var(--navy3);}
+.grid-card:hover::after{transform:scaleX(1);}
+.gc-type{
+  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:10px;
+}
+.gc-title{font-size:.95rem;font-weight:400;color:var(--text);margin-bottom:8px;line-height:1.35;}
+.gc-summary{font-size:.78rem;color:var(--muted);line-height:1.7;}
+.gc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
+.gc-tag{
+  font-size:.58rem;padding:2px 7px;border-radius:2px;
+  background:rgba(148,163,184,.07);border:1px solid var(--border);color:var(--dim);
+}
+
+/* ── CARD PANEL ── */
+#panel{
+  position:fixed;top:52px;right:0;width:360px;
+  height:calc(100vh - 52px);background:#0a0f1e;
+  border-left:1px solid var(--border2);z-index:300;
+  display:none;overflow-y:auto;padding:24px;
+}
+#panel.open{display:block;}
+.p-close{
+  position:absolute;top:16px;right:16px;
+  background:none;border:none;color:var(--dim);
+  font-size:1rem;cursor:pointer;line-height:1;
+}
+.p-close:hover{color:var(--text);}
+.p-type{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px;}
+.p-title{font-family:'Noto Serif JP','Inter',serif;font-size:1.05rem;font-weight:400;color:var(--text);line-height:1.4;margin-bottom:6px;}
+.p-cat{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--dim);margin-bottom:16px;}
+.p-div{height:1px;background:var(--border);margin:16px 0;}
+.p-label{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;}
+.p-text{font-size:.82rem;color:var(--muted);line-height:1.9;margin-bottom:14px;}
+.p-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+.p-tag{font-size:.6rem;padding:2px 8px;border-radius:2px;background:rgba(148,163,184,.07);border:1px solid var(--border);color:var(--dim);}
+.p-rel{display:flex;flex-direction:column;gap:5px;}
+.p-ri{
+  font-size:.78rem;color:var(--muted);padding:8px 12px;
+  background:var(--navy2);border:1px solid var(--border);border-radius:2px;
+  cursor:pointer;line-height:1.5;transition:background .15s;
+}
+.p-ri:hover{background:var(--navy3);color:var(--text);}
+
+/* ── PROFILE PANEL ── */
+#profilePanel{
+  position:fixed;top:52px;left:50%;transform:translateX(-50%);
+  width:380px;background:#0a0f1e;border:1px solid var(--border2);
+  border-radius:6px;z-index:400;display:none;padding:24px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+#profilePanel.open{display:block;}
+.pp-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--dim);font-size:1rem;cursor:pointer;}
+.pp-title{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+.pp-field{margin-bottom:14px;}
+.pp-label{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;}
+.pp-input{
+  width:100%;background:var(--navy2);border:1px solid var(--border2);
+  color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;
+  padding:8px 12px;border-radius:3px;outline:none;
+}
+.pp-input:focus{border-color:var(--gold);}
+.pp-save{
+  width:100%;margin-top:6px;padding:10px;
+  background:rgba(201,169,110,.15);border:1px solid rgba(201,169,110,.4);
+  color:var(--gold);font-family:'DM Mono',monospace;font-size:.68rem;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:3px;
+  transition:all .15s;
+}
+.pp-save:hover{background:rgba(201,169,110,.25);}
+
+/* ── LEGEND ── */
+#legend{
+  position:fixed;bottom:20px;left:20px;z-index:200;
+  background:rgba(10,15,30,.92);border:1px solid var(--border);
+  border-radius:4px;padding:12px 16px;
+  display:flex;flex-direction:column;gap:7px;
+}
+.lg-item{display:flex;align-items:center;gap:8px;font-size:.6rem;letter-spacing:.05em;color:var(--muted);}
+.lg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* ── HINT ── */
+#hint{
+  position:fixed;bottom:20px;right:20px;z-index:200;
+  font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;
+  color:var(--dim);text-align:right;line-height:1.8;
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <a class="t-logo" href="https://kaofriz.github.io">KF</a>
+  <span class="t-sep">·</span>
+  <span class="t-label" id="t-label">My Mandala — AXE-L Knowledge Map</span>
+  <div class="t-right">
+    <div class="view-group">
+      <button class="vbtn active" onclick="setView('map')" id="btn-map">Map</button>
+      <button class="vbtn" onclick="setView('list')" id="btn-list">List</button>
+      <button class="vbtn" onclick="setView('grid')" id="btn-grid">Grid</button>
+    </div>
+    <button class="lang-btn" onclick="toggleLang()" id="langBtn">日本語</button>
+    <a class="t-link" href="https://kaofriz.github.io/axe-l/">AXE-L ↗</a>
+    <a class="t-link" href="https://kaofriz.github.io/axes/">AXES ↗</a>
+  </div>
+</div>
+
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="listWrap"></div>
+  <div id="gridWrap"><div class="grid-inner" id="gridInner"></div></div>
+</div>
+
+<div id="legend"></div>
+<div id="hint"></div>
+
+<!-- CARD PANEL -->
+<div id="panel">
+  <button class="p-close" onclick="closePanel()">✕</button>
+  <div id="pcontent"></div>
+</div>
+
+<!-- PROFILE PANEL -->
+<div id="profilePanel">
+  <button class="pp-close" onclick="closeProfile()">✕</button>
+  <div class="pp-title" id="pp-title">Edit Profile</div>
+  <div class="pp-field">
+    <div class="pp-label" id="pp-lname">Name</div>
+    <input class="pp-input" id="pp-name" placeholder="Your Name">
+  </div>
+  <div class="pp-field">
+    <div class="pp-label" id="pp-lrole">Role / Title</div>
+    <input class="pp-input" id="pp-role" placeholder="Researcher · Learner · Creator">
+  </div>
+  <div class="pp-field">
+    <div class="pp-label" id="pp-lbio">Bio</div>
+    <input class="pp-input" id="pp-bio" placeholder="One line about your interests">
+  </div>
+  <div class="pp-field">
+    <div class="pp-label">GitHub</div>
+    <input class="pp-input" id="pp-github" placeholder="github.com/username">
+  </div>
+  <div class="pp-field">
+    <div class="pp-label">Link 2</div>
+    <input class="pp-input" id="pp-link2" placeholder="instagram.com/username or other">
+  </div>
+  <button class="pp-save" onclick="saveProfile()" id="pp-save">Save</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CARD DATA
+// ═══════════════════════════════════════
+const DEMO_CARDS = [
+  {id:1, title:"Laozi (老子)", titleJa:"老子",type:"Thinker",
+   summary:"Semi-legendary Chinese philosopher (c.500 BCE). First philosophical source of AXI.",
+   summaryJa:"中国の半伝説的哲学者（前500年頃）。AXIの第一哲学的源泉。",
+   notes:"道可道，非恒道 — The speakable Tao is not the possible Tao. Axes as open possibility. 'Defined = dead' matches AXI's provisional axis model.\n\nDifference from AXI: Laozi reaches meta and stays — non-action, silence. AXI cycles between meta and micro, operating provisionally at each level.",
+   notesJa:"道可道，非恒道——安冨歩の解釈：「語れる道は可能性としての道ではない」。軸を開かれた可能性として。「定義されたものは死んでいる」はAXIの暫定的軸モデルと一致。\n\nAXIとの差分：老子はメタに到達してそこに留まる——無為・沈黙。AXIはメタとミクロの間を循環し、各レベルで暫定的に操作する。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["Taoism","China","AXI source ①","meta-perspective"],
+   related:[{id:2},{id:34},{id:44}]},
+
+  {id:2, title:"Tao Te Ching (道徳経)", titleJa:"道徳経",type:"Literature",
+   summary:"The fundamental text of Taoism, attributed to Laozi (c.500 BCE). 81 chapters on the nature of the Tao, virtue, and governance.",
+   summaryJa:"老子に帰せられる道教の根本テキスト（前500年頃）。道・徳・統治について81章。",
+   notes:"「道可道非恒道」— The way that can be told is not the possible way. Yasutomi Ayumu's reading using 恒 (heng = possible) opens the text to AXI's provisional axis model.",
+   notesJa:"「道可道非恒道」——安冨歩の「恒」（可能性）読みがテキスト全体をAXIの暫定的軸モデルに開く。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["Taoism","AXI","text","canonical"],
+   related:[{id:1},{id:3}]},
+
+  {id:3, title:"Yasutomi Ayumu (安冨歩)", titleJa:"安冨歩",type:"Thinker",
+   summary:"Japanese economist and philosopher at Tokyo University. Heterodox interpretations of classical Chinese philosophy.",
+   summaryJa:"東京大学の経済学者・哲学者。中国古典哲学の異端的解釈で知られる。",
+   notes:"His reading of Laozi uses 恒 (heng = possible) rather than 常 (chang = constant). This opens up AXI's core: coordinates as possibilities, not fixed truths.",
+   notesJa:"老子の「恒」（可能性）読みがAXIの核心を開く：座標は固定された真理ではなく可能性として。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["Japan","Laozi","AXI","interpretation"],
+   related:[{id:1},{id:2}]},
+
+  {id:4, title:"Impermanence (諸行無常)", titleJa:"諸行無常",type:"Concept",
+   summary:"One of the Three Marks of Existence in Buddhism. All conditioned phenomena are impermanent.",
+   summaryJa:"仏教の三法印のひとつ。あらゆる有為の現象は無常である。",
+   notes:"Used as the test concept in the AXES cross-model experiment (3 sessions, 2026). The concept re-enacts itself when evaluated — evaluators seek fixed essence, but none exists.",
+   notesJa:"AXESクロスモデル実験（2026年、3セッション）のテスト概念として使用。概念が評価される際にそれ自身を再演する——評価者は固定した本質を求めるが、存在しない。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["Buddhism","AXES experiment","impermanence"],
+   related:[{id:1},{id:36}]},
+
+  {id:5, title:"Claude Lévi-Strauss", titleJa:"クロード・レヴィ＝ストロース",type:"Thinker",
+   summary:"French social anthropologist (1908–2009). Pioneer of structural anthropology. Bricolage, mythème, the raw and the cooked.",
+   summaryJa:"フランスの社会人類学者（1908–2009）。構造人類学の先駆者。ブリコラージュ・神話素。",
+   notes:"Bricolage — making do with whatever is at hand — is an analogy for AXIO: using available conceptual materials to construct new meaning across domains.",
+   notesJa:"ブリコラージュ——手元にあるもので作る——はAXIOのアナロジー：利用可能な概念素材を使って異領域にわたる新しい意味を構築する。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["structuralism","anthropology","bricolage","AXIO"],
+   related:[{id:42}]},
+
+  {id:34, title:"Zhuangzi (荘子)", titleJa:"荘子",type:"Thinker",
+   summary:"Chinese Daoist philosopher (c.300 BCE). Butterfly dream: observer coordinates are unfixable. 'Uselessness of the useless.'",
+   summaryJa:"中国・道家の哲学者（前300年頃）。胡蝶の夢：観察者の座標は固定できない。「無用の用」。",
+   notes:"Observer relativity (butterfly dream) = AXES observer-coordinate model. 'Useless' from one axis = valuable from another — clearest pre-modern multi-axis evaluation.\n\nDifference from AXI: dissolves boundaries but offers no return path. AXES provides provisional coordinates after boundary-dissolution.",
+   notesJa:"胡蝶の夢＝AXES観察者座標モデル。ある軸での「無用」＝別の軸での価値——前近代の多軸評価の最良の表現。\n\nAXIとの差分：境界を溶かすが戻ってこない。AXESは境界溶解後に暫定座標を提供する。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["Daoism","China","AXI","observer relativity","multi-axis"],
+   related:[{id:1},{id:44}]},
+
+  {id:35, title:"Socrates · Plato · Aristotle", titleJa:"ソクラテス・プラトン・アリストテレス",type:"Thinker",
+   summary:"Three pillars of ancient Greek philosophy (470–322 BCE). Aporia, the fixed Idea, empirical classification.",
+   summaryJa:"古代ギリシャ哲学の三巨人（470–322 BCE）。アポリア・固定されたイデア・経験的分類。",
+   notes:"Socrates: 'knowing you don't know' — difference-recognition as epistemic practice.\nAristotle: observation first, system second — empirical axis-generation. But cannot exit his own classification frame: the Aristotelian taxonomic system is the historical root of disciplinary fixation.\n\nSocrates' paradox: preached epistemic humility, argued aggressively, was sentenced to death — couldn't practise what he preached.",
+   notesJa:"ソクラテス：「知らないことを知る」——差異認識としての認識論的実践。\nアリストテレス：観察先行・体系後行——経験的軸生成と一致。しかし自分の分類枠から出られない：アリストテレス的体系は専門的視座固定の歴史的根源。\n\nソクラテスの逆説：認識論的謙虚さを説きながら論破しまくって死刑になった——実践できていなかった。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["Greece","AXI","Aristotelian system","AXIO","epistemic fixation"],
+   related:[{id:38},{id:39}]},
+
+  {id:36, title:"Nāgārjuna (龍樹)", titleJa:"龍樹",type:"Thinker",
+   summary:"Indian Buddhist philosopher (c.200 CE). Śūnyatā: no axis has fixed substance. Two-truths doctrine. Second philosophical source of AXI.",
+   summaryJa:"インドの仏教哲学者（200年頃）。空：いかなる軸も固定的実体を持たない。二諦説。AXIの第二哲学的源泉。",
+   notes:"Two-truths = AXI structure: meta-level all axes are relative (śūnya); local level axes operate as provisional absolutes.\n\nDifference from AXI: in service of liberation. AXI uses the same structure for practical coordinate operation — not liberation, but sustained engagement.",
+   notesJa:"二諦説＝AXIの構造：メタレベルでは全軸が相対的（空）、局所レベルでは軸は暫定的絶対として機能する。\n\nAXIとの差分：解脱への奉仕として。AXIは同じ構造を実践的座標操作に使用——解脱ではなく継続的燃焼。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["Buddhism","śūnyatā","India","AXI source ②","two-truths"],
+   related:[{id:4}]},
+
+  {id:37, title:"Islamic Golden Age", titleJa:"イスラム黄金時代",type:"Concept",
+   summary:"Baghdad, 8–13c CE. Al-Kindi, Ibn Sina, Ibn Rushd. Greek philosophy preserved; zero transmitted to Europe.",
+   summaryJa:"バグダッド、8–13世紀。アル・キンディー、イブン・スィーナー、イブン・ルシュド。ギリシャ哲学の保存、ゼロの伝達。",
+   notes:"Monotheistic yet intellectually open — absorbed knowledge across cultural axes. Highest pre-modern example of multi-axis knowledge integration. Resonates with AXIO's cross-domain structural connection.",
+   notesJa:"一神教でありながら知的に開かれていた——複数の文化的軸から積極的に知識を吸収。前近代の多軸知識統合の最高の例。AXIOの異領域構造的接続と共鳴する。",
+   category:"History & Culture", categoryJa:"歴史・文化",
+   tags:["Islam","history","knowledge synthesis","AXIO"],
+   related:[{id:35}]},
+
+  {id:38, title:"Descartes · Hume", titleJa:"デカルト・ヒューム",type:"Thinker",
+   summary:"Descartes: subject as fixed origin. Hume: causality as habit — radical empiricism.",
+   summaryJa:"デカルト：主体を固定された起源として。ヒューム：因果律は習慣——ラディカルな経験主義。",
+   notes:"Hume's radical doubt — 'self-evident structures may be habits' — aligns with AXI's refusal to treat any axis as innate.\n\nDescartes fixes 'subject' as absolute. AXI treats subject as one axis among many.",
+   notesJa:"ヒュームのラディカルな懐疑——「自明に見える構造は習慣かもしれない」——AXIのいかなる軸も生得的とみなさない立場と一致。\n\nデカルトは「主体」を絶対として固定する。AXIは主体を多くの軸のひとつとして扱う。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["Western philosophy","empiricism","scepticism","AXI"],
+   related:[{id:39}]},
+
+  {id:39, title:"Kant (Immanuel Kant)", titleJa:"カント",type:"Thinker",
+   summary:"Prussian philosopher (1724–1804). A priori cognitive frameworks. The Copernican turn in epistemology.",
+   summaryJa:"プロイセンの哲学者（1724–1804）。認知のア・プリオリな枠組み。認識論のコペルニクス的転回。",
+   notes:"'Container before content' — how we perceive depends on what axes we already have.\n\nDifference from AXI: Kant treats time/space/causality as innate. AXI: all axes are generated through experience. No fixed container comes pre-installed.",
+   notesJa:"「器が内容に先立つ」——どのような軸をすでに持っているかによって何が見えるかが変わる。\n\nAXIとの差分：カントは時間・空間・因果律を生得的と扱う。AXI：すべての軸は経験を通じて生成される。固定された器はプレインストールされていない。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["Western philosophy","epistemology","AXI","a priori"],
+   related:[{id:38},{id:40}]},
+
+  {id:40, title:"Hegel · Marx · Nietzsche", titleJa:"ヘーゲル・マルクス・ニーチェ",type:"Thinker",
+   summary:"19th-century German philosophers. Contradiction as fuel; material axis; the death of God.",
+   summaryJa:"19世紀ドイツの哲学者。矛盾が燃料、物質的軸、神の死。",
+   notes:"Hegel: contradiction (difference) as engine of progress — AXI agrees.\nNietzsche's collapse illustrates the risk of seeking a new absolute rather than pluralising axes.\n\nAll three privilege a single axis. AXI treats each as locally valid, not universally dominant.",
+   notesJa:"ヘーゲル：矛盾（差異）が進歩のエンジン——AXIは同意。\nニーチェの崩壊は、軸を複数化する代わりに新しい絶対を求めることのリスクを示す。\n\n三者とも単一の軸を特権化する。AXIは各々を局所的に有効なものとして扱う。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["German philosophy","AXI","Nietzsche","dialectics"],
+   related:[{id:39}]},
+
+  {id:41, title:"Einstein (Albert Einstein)", titleJa:"アインシュタイン",type:"Thinker",
+   summary:"Physicist (1879–1955). No absolute frame of reference. Third and scientific source of AXI.",
+   summaryJa:"物理学者（1879–1955）。絶対的な基準枠は存在しない。AXIの第三・科学的源泉。",
+   notes:"Relativity: different observers, different coordinate systems, different values — all equally valid. Classical mechanics as local optimisation within its domain. The Newton/Einstein example is AXI's clearest illustration.\n\nDifference: AXI extends the coordinate-system insight to epistemology, ethics, culture, and AI alignment.",
+   notesJa:"相対性理論：異なる観察者、異なる座標系、異なる価値——すべて等しく有効。古典力学はそのドメイン内での局所最適化として有効のまま。\n\nAXIとの差分：AXIはこの座標系の洞察を認識論・倫理・文化・AIアライメントに拡張する。",
+   category:"Physics & Mathematics", categoryJa:"物理学・数学",
+   tags:["physics","relativity","AXI source ③","coordinate system"],
+   related:[{id:12}]},
+
+  {id:12, title:"Theory of Relativity", titleJa:"相対性理論",type:"Concept",
+   summary:"Einstein's physical theory (1905–1915). Time and space are relative to the observer. Scientific foundation of AXI's coordinate model.",
+   summaryJa:"アインシュタインの物理理論（1905–1915）。時間と空間は観察者に相対的。AXIの座標モデルの科学的基盤。",
+   notes:"No absolute frame of reference — different observers measure different values, all equally valid. Classical mechanics remains locally valid within its domain.",
+   notesJa:"絶対的な基準枠は存在しない——異なる観察者は異なる値を測定し、すべて等しく有効。古典力学はそのドメイン内で局所的に有効のまま。",
+   category:"Physics & Mathematics", categoryJa:"物理学・数学",
+   tags:["physics","relativity","AXI","observer"],
+   related:[{id:41}]},
+
+  {id:42, title:"Wittgenstein · Lévi-Strauss · Foucault · Derrida", titleJa:"ウィトゲンシュタイン・レヴィ＝ストロース・フーコー・デリダ",type:"Thinker",
+   summary:"Mid-to-late 20th c. Language / structure / power / différance. Meaning unfixable. AXI proposes provisional operation rather than silence or deconstruction alone.",
+   summaryJa:"20世紀中後半。言語・構造・権力・差延。意味は固定できない。AXIは沈黙や解体だけでなく暫定的操作を提案する。",
+   notes:"Foucault: knowledge-power entanglement — axis-setting is always political. Derrida: meaning drifts — AXI's provisional axis model. Lévi-Strauss: deep structural patterns → bricolage → AXIO.\n\nDifference: deconstruction without construction leaves no operational ground.",
+   notesJa:"フーコー：知識と権力の絡み合い——軸設定は常に政治的行為。デリダ：意味の流動——AXIの暫定的軸モデル。レヴィ＝ストロース：深層構造パターン→ブリコラージュ→AXIO。\n\n差分：解体なき建設は操作の根拠を残さない。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["post-structuralism","AXI","Foucault","Derrida","bricolage"],
+   related:[{id:5},{id:35}]},
+
+  {id:43, title:"Meillassoux · Harman · Morton · Gabriel", titleJa:"メイヤスー・ハーマン・モートン・ガブリエル",type:"Thinker",
+   summary:"Contemporary philosophers (2000s–). OOO, dark ecology, no meta-frame contains all. Converges with AXI from a Western path.",
+   summaryJa:"現代哲学者（2000年代–）。OOO・ダーク・エコロジー・いかなるメタ枠組みもすべてを含まない。西洋哲学からAXIへの収束。",
+   notes:"Harman OOO: non-human actors have coordinate relations → AXES extends to AI. Morton: humans are one node in a mesh. Gabriel: no meta-frame contains all — AXES maps locally.\n\nDifference: AXI synthesises with Laozi, Nāgārjuna, Einstein and adds AXES as practical protocol.",
+   notesJa:"ハーマンOOO：非人間的アクターが座標関係を持つ→AXESをAIに拡張する論拠。モートン：人間はメッシュの一ノード。ガブリエル：いかなるメタ枠組みもすべてを含まない——AXESは局所的にマッピングする。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["OOO","post-humanism","AXI","AXES","contemporary philosophy"],
+   related:[{id:1},{id:36}]},
+
+  {id:44, title:"Confucius (孔子)", titleJa:"孔子",type:"Thinker",
+   summary:"Chinese philosopher (c.500 BCE). Ren and Li: responses calibrated to each interlocutor. Dynamic teaching vs. later institutionalisation.",
+   summaryJa:"中国の哲学者（前500年頃）。仁と礼：対話者それぞれに合わせた応答。動的な教えと後の制度化の差異。",
+   notes:"Original Confucius: different responses for different interlocutors = local optimisation. Li as shared coordinate system enabling communication.\n\nWhen Li is absolutised it becomes an exclusionary power apparatus — the institutionalisation failure pattern.",
+   notesJa:"元来の孔子：相手に応じて異なる応答＝局所最適化の実践。礼は効率的コミュニケーションを可能にする共有座標系として機能する。\n\n礼が絶対化されると排他的権力装置になる——制度化の失敗パターン。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["China","Confucianism","AXI","local optimisation"],
+   related:[{id:1},{id:34}]},
+
+  {id:32, title:"Vedas & Upanishads", titleJa:"ヴェーダ・ウパニシャッド",type:"Concept",
+   summary:"Ancient Indian sacred texts (c.1500 BCE). Brahman–Atman unity; the lineage of śūnya begins here.",
+   summaryJa:"インド最古の聖典群（前1500年頃）。ブラフマン・アートマン同一性。空（śūnya）の系譜の起源。",
+   notes:"Oral transmission — knowledge lives in relationship, not fixed text. Deliberate non-writing as philosophical stance.",
+   notesJa:"口承による知識伝達——知識はテキストに固定されず関係性の中に生きる。書かないことそのものが哲学的立場。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["India","oral tradition","śūnya","ancient"],
+   related:[{id:36}]},
+
+  {id:33, title:"I Ching (易経)", titleJa:"易経",type:"Literature",
+   summary:"Ancient Chinese oracle text (c.1000 BCE). Binary structure, change, pattern. Zhou dynasty divination tradition.",
+   summaryJa:"中国古代の卜占・哲学書（前1000年頃）。二進法的構造、変化、パターン。周代の卜占伝統。",
+   notes:"Binary structure (yin-yang, hexagrams) prefigures axes-based thinking. Treats change as fundamental structure of reality — resonates with AXI's difference-as-condition-of-knowledge.",
+   notesJa:"陰陽・卦の二進法的構造はAXIの軸ベース思考を先取りする。変化を現実の根本構造として扱う——AXIの「差異が認識の条件」と共鳴する。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["China","change","pattern","AXI","binary"],
+   related:[{id:1}]},
+
+  {id:15, title:"Kubo-Kawai Nanako (久保（川合）南海子)", titleJa:"久保（川合）南海子",type:"Thinker",
+   summary:"Professor of Psychology, Aichi Shukutoku University. Proposed Projection Science. Research on fan devotion as cognitive mechanism.",
+   summaryJa:"愛知淑徳大学心理学部教授。プロジェクション・サイエンスの提唱者。推し活を認知メカニズムとして研究。",
+   notes:"Projection: overlaying internally constructed representations onto the physical world. Demonstrated that the act of cheering changes the cheerer's inner state — bidirectional projection. Foundation of PPLT.",
+   notesJa:"プロジェクション：内部で構築した表象を物理世界に重ね合わせる心の働き。応援行動が応援者の内的状態を変えることを実証——双方向的投影。PPLTの基盤。",
+   category:"Cognitive Science & Psychology", categoryJa:"認知科学・心理学",
+   tags:["projection","cognitive science","PPLT","Japan"],
+   related:[{id:16},{id:25},{id:26}]},
+
+  {id:25, title:"Projection Science", titleJa:"プロジェクション・サイエンス（概念）",type:"Concept",
+   summary:"Third-generation cognitive science (Suzuki Hiroaki, 2015). The science of how humans overlay meaning onto physical reality.",
+   summaryJa:"認知科学の第三世代（鈴木宏昭、2015年）。人間が物理的現実に意味を重ね合わせる仕組みの科学。",
+   notes:"Language is only one medium of projection. Visual, bodily, sensory projection are equally fundamental — costume, surgery, VR, illusions all operate through the same mechanism.\n\nConnection to AXES: the circular recognition process is isomorphic with AXES' locality-update cycle. AXIO's operation cycle is the intentional design of this natural process.",
+   notesJa:"言語はプロジェクションの一手段に過ぎない。視覚的・身体的・感覚的投影も同等に根本的——制服・整形・VR・錯覚はすべて同じメカニズムで作動する。\n\nAXESとの接続：循環する認識プロセスはAXESの局更新サイクルと同型。AXIOの演算サイクルはこの自然プロセスの意図的設計。",
+   category:"Cognitive Science & Psychology", categoryJa:"認知科学・心理学",
+   tags:["projection","cognitive science","AXES","PPLT","AXI","VR","third generation"],
+   related:[{id:26},{id:15},{id:27}]},
+
+  {id:26, title:"Suzuki Hiroaki (鈴木宏昭)", titleJa:"鈴木宏昭",type:"Thinker",
+   summary:"Professor, Aoyama Gakuin University. Cognitive scientist. Proposed Projection Science (2015).",
+   summaryJa:"青山学院大学教授。認知科学者。プロジェクション・サイエンスの提唱者（2015年）。",
+   notes:"'Only humans can create a world coloured with meaning' — frames the human-AI epistemic distinction at the heart of AXES. Also a researcher of similarity and analogy, connecting to Gentner's SMT.",
+   notesJa:"「人間にしか作りえない意味に彩られた世界」——AXESの核心にある人間-AI認識論的差異を枠組みとして提示。類似とアナロジーの研究者でもあり、GentnerのSMTと接続する。",
+   category:"Cognitive Science & Psychology", categoryJa:"認知科学・心理学",
+   tags:["projection","cognitive science","AXES","analogy","Japan"],
+   related:[{id:25},{id:27}]},
+
+  {id:27, title:"Dedre Gentner", titleJa:"デドリー・ゲントナー",type:"Thinker",
+   summary:"Professor, Northwestern University. Structure-Mapping Theory (1983). World authority on analogy and relational learning.",
+   summaryJa:"ノースウェスタン大学教授。構造マッピング理論（1983）。アナロジーと関係学習の世界的権威。",
+   notes:"SMT: analogy = correspondence of relational structure, not surface similarity. Cognitive-scientific basis for AXIO's pattern recognition step.\n\nKey implication: analogical thinking is trainable — not exclusive to non-specialists.",
+   notesJa:"SMT：アナロジー＝関係構造の対応（表面的類似ではない）。AXIOのパターン認識ステップの認知科学的根拠。\n\n重要な含意：アナロジー的思考は訓練可能——非専門家限定ではない。",
+   category:"Cognitive Science & Psychology", categoryJa:"認知科学・心理学",
+   tags:["analogy","Structure-Mapping","AXES","AXIO","AXE-L"],
+   related:[{id:28},{id:26}]},
+
+  {id:28, title:"Peter Gärdenfors", titleJa:"ペーター・ガーデンフォース",type:"Thinker",
+   summary:"Professor of Cognitive Science, Lund University. Conceptual Spaces Theory (2000). Geometry of thought.",
+   summaryJa:"ルンド大学認知科学教授。概念空間論（2000年）。思考の幾何学。",
+   notes:"Conceptual Spaces: concepts are regions in a geometric space defined by quality dimensions. Axis = quality dimension. AXES' coordinates are Gärdenfors' quality dimensions. Epistemic computation may be formalizable in this framework.",
+   notesJa:"概念空間：概念は質的次元によって定義される幾何学的空間における領域。軸＝質的次元。AXESの座標はGärdenforsの質的次元。Epistemic computationはこの枠組みで形式化できる可能性がある。",
+   category:"Cognitive Science & Psychology", categoryJa:"認知科学・心理学",
+   tags:["conceptual spaces","AXES","Epistemic computation","geometry","LLM"],
+   related:[{id:29},{id:27}]},
+
+  {id:29, title:"Conceptual Spaces: The Geometry of Thought", titleJa:"Conceptual Spaces（概念空間論）",type:"Literature",
+   summary:"Gärdenfors, Peter (2000). MIT Press. Foundational text of Conceptual Spaces Theory.",
+   summaryJa:"Gärdenfors, Peter（2000）。MIT Press。概念空間論の主著。",
+   notes:"Core: a conceptual space is built from quality dimensions; concepts are convex regions.\n\nDirect implications for AXES: axis = quality dimension; coordinate value = position in conceptual space; axis selection = choice of observational lens; 'overhang' = signal for new axis.",
+   notesJa:"核心：概念空間は質的次元から構築される。概念は凸領域。\n\nAXESへの直接的含意：軸＝質的次元、座標値＝概念空間における位置、軸の選択＝観察のレンズの選択、「はみ出し」＝新軸生成のシグナル。",
+   category:"Cognitive Science & Psychology", categoryJa:"認知科学・心理学",
+   tags:["conceptual spaces","AXES","geometry","MIT Press"],
+   related:[{id:28},{id:27}]},
+
+  {id:18, title:"Cross-Architecture Model Diffing (DFC)", titleJa:"DFC / Crosscoders論文",type:"Literature",
+   summary:"Jiralerspong & Bricken (2026). arXiv:2602.11729. Anthropic. LLM feature space comparison across architectures.",
+   summaryJa:"Jiralerspong & Bricken（2026）。arXiv:2602.11729。Anthropic。LLM特徴空間のアーキテクチャ横断比較。",
+   notes:"LLM feature space is coordinate-dependent: DFC reveals features (CCP alignment, American exceptionalism) invisible to standard methods. Technical instantiation of 'coordinate system determines what exists.'\n\nConnection to AXES: LLM feature spaces as high-dimensional conceptual spaces (Gärdenfors).",
+   notesJa:"LLM特徴空間は座標系依存：DFCが標準手法では不可視の特徴（CCPアラインメント・アメリカ例外主義）を発見。「座標系が存在を決定する」の技術的実例。\n\nAXESとの接続：LLM特徴空間をGärdenforsの概念空間として解釈できる。",
+   category:"AI & Information Science", categoryJa:"AI・情報科学",
+   tags:["DFC","LLM","AI interpretability","AXES","Anthropic","feature space"],
+   related:[{id:29},{id:28}]},
+
+  {id:19, title:"Single-minus gluon amplitudes are nonzero", titleJa:"グルーオン論文",type:"Literature",
+   summary:"arXiv:2602.12176 (2026). OpenAI, Harvard, Cambridge. Gluon amplitudes previously assumed zero are revealed in Klein space.",
+   summaryJa:"arXiv:2602.12176（2026）。OpenAI・ハーバード・ケンブリッジ。Klein空間で以前はゼロとされていたグルーオン振幅が非ゼロであることが判明。",
+   notes:"Physical instantiation of 'coordinate system determines what exists.' Purpose generated locality; locality demanded the axis.\n\nHuman × AI collaboration: human set the locality (half-collinear in Klein space), AI computed. Clearest empirical example of AXIO's operation cycle in scientific practice.",
+   notesJa:"「座標系が存在を決定する」の物理的実例。目的が局を生成し、局が軸を要請した。\n\n人間×AI協働：人間が局（Klein空間のハーフコリニア配置）を設定し、AIが計算した。AXIOの演算サイクルの科学的実践における最も明確な実例。",
+   category:"Physics & Mathematics", categoryJa:"物理学・数学",
+   tags:["physics","gluon","AXI","AXIO","coordinate system","human×AI"],
+   related:[{id:12},{id:41}]},
+
+  {id:20, title:"Sanmitsu — Three Mysteries (三密)", titleJa:"三密（密教）",type:"Concept",
+   summary:"Esoteric Buddhist practice: body-secret (mudra), speech-secret (mantra), mind-secret (samadhi). Multi-sensory embodied projection.",
+   summaryJa:"密教の実践：身密（印）・口密（真言）・意密（三摩地）。多感覚的な身体的投影。",
+   notes:"Historical instantiation of projection operating across all sensory channels simultaneously. Language is one medium — sanmitsu demonstrates the others. Connects to Projection Science's multi-modal view.",
+   notesJa:"プロジェクションがすべての感覚チャンネルにわたって同時に作動することの歴史的実例。言語は一つの媒体——三密は他の媒体を示す。プロジェクション・サイエンスの多モーダル的視点と接続する。",
+   category:"Philosophy & Thought", categoryJa:"哲学・思想",
+   tags:["esoteric Buddhism","projection","embodied cognition","multi-sensory"],
+   related:[{id:25},{id:4}]}
+];
+
+const CAT_COLORS = {
+  "Philosophy & Thought":            "#a78bfa",
+  "Cognitive Science & Psychology":  "#60a5fa",
+  "Physics & Mathematics":           "#34d399",
+  "AI & Information Science":        "#fb923c",
+  "History & Culture":               "#facc15",
+  "Education & Learning":            "#2dd4bf",
+  "Other":                           "#94a3b8"
+};
+const CAT_COLORS_JA = {
+  "哲学・思想":       "#a78bfa",
+  "認知科学・心理学": "#60a5fa",
+  "物理学・数学":     "#34d399",
+  "AI・情報科学":     "#fb923c",
+  "歴史・文化":       "#facc15",
+  "教育・学習":       "#2dd4bf",
+  "その他":           "#94a3b8"
+};
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let isJa = false;
+let currentView = 'map';
+let profile = {name:'(Your Name)', role:'Researcher · Learner · Creator', bio:'', github:'', link2:''};
+
+function t(en, ja){ return isJa ? ja : en; }
+function cardCat(card){ return isJa ? card.categoryJa : card.category; }
+function cardTitle(card){ return isJa && card.titleJa ? card.titleJa : card.title; }
+function cardSummary(card){ return isJa && card.summaryJa ? card.summaryJa : card.summary; }
+function cardNotes(card){ return isJa && card.notesJa ? card.notesJa : card.notes; }
+function catColor(cat){
+  return CAT_COLORS[cat] || CAT_COLORS_JA[cat] || '#94a3b8';
+}
+
+// ═══════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════
+function loadProfile(){
+  try{const s=localStorage.getItem('mandala_profile');if(s)profile=JSON.parse(s);}catch(e){}
+}
+function saveProfile(){
+  profile.name=document.getElementById('pp-name').value||'(Your Name)';
+  profile.role=document.getElementById('pp-role').value||'';
+  profile.bio=document.getElementById('pp-bio').value||'';
+  profile.github=document.getElementById('pp-github').value||'';
+  profile.link2=document.getElementById('pp-link2').value||'';
+  try{localStorage.setItem('mandala_profile',JSON.stringify(profile));}catch(e){}
+  closeProfile(); draw();
+}
+function openProfilePanel(){
+  document.getElementById('pp-name').value=profile.name==='(Your Name)'?'':profile.name;
+  document.getElementById('pp-role').value=profile.role;
+  document.getElementById('pp-bio').value=profile.bio;
+  document.getElementById('pp-github').value=profile.github;
+  document.getElementById('pp-link2').value=profile.link2;
+  document.getElementById('profilePanel').classList.add('open');
+}
+function closeProfile(){
+  document.getElementById('profilePanel').classList.remove('open');
+}
+
+// ═══════════════════════════════════════
+// LANG
+// ═══════════════════════════════════════
+function toggleLang(){
+  isJa=!isJa;
+  document.getElementById('langBtn').textContent=isJa?'English':'日本語';
+  document.getElementById('t-label').textContent=t('My Mandala — AXE-L Knowledge Map','My Mandala — AXE-L ナレッジマップ');
+  document.getElementById('hint').innerHTML=t(
+    'Click category → expand cards · Click card → details · Drag · Scroll to zoom',
+    'カテゴリクリック→カード展開 · カードクリック→詳細 · ドラッグ · スクロールでズーム'
+  );
+  buildLegend();
+  if(currentView==='map') draw();
+  else if(currentView==='list') renderList();
+  else renderGrid();
+}
+
+// ═══════════════════════════════════════
+// VIEW
+// ═══════════════════════════════════════
+function setView(v){
+  currentView=v;
+  ['map','list','grid'].forEach(x=>{
+    document.getElementById('btn-'+x).classList.toggle('active',x===v);
+  });
+  const c=document.getElementById('c');
+  const lw=document.getElementById('listWrap');
+  const gw=document.getElementById('gridWrap');
+  c.style.display=v==='map'?'block':'none';
+  lw.style.display=v==='list'?'block':'none';
+  gw.style.display=v==='grid'?'block':'none';
+  document.getElementById('legend').style.display=v==='map'?'flex':'none';
+  if(v==='map') initMandala();
+  else if(v==='list') renderList();
+  else renderGrid();
+  closePanel();
+}
+
+// ═══════════════════════════════════════
+// LIST VIEW
+// ═══════════════════════════════════════
+function renderList(){
+  const wrap=document.getElementById('listWrap');
+  const cats=[...new Set(DEMO_CARDS.map(c=>cardCat(c)))];
+  wrap.innerHTML=`<div class="view-header">${t('All concepts — '+DEMO_CARDS.length+' cards','全概念 — '+DEMO_CARDS.length+'枚')}</div>`;
+  cats.forEach(cat=>{
+    const cards=DEMO_CARDS.filter(c=>cardCat(c)===cat);
+    const col=catColor(cat);
+    const sec=document.createElement('div');
+    sec.style.marginBottom='32px';
+    sec.innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:${col};margin-bottom:12px;display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:${col};display:inline-block"></span>${cat}</div>`;
+    cards.forEach(card=>{
+      const item=document.createElement('div');
+      item.className='list-item';
+      item.innerHTML=`
+        <div class="li-dot" style="background:${col}"></div>
+        <div class="li-body">
+          <div class="li-type" style="color:${col}">${card.type}</div>
+          <div class="li-title">${cardTitle(card)}</div>
+          <div class="li-summary">${cardSummary(card)}</div>
+        </div>`;
+      item.onclick=()=>showPanel(card);
+      sec.appendChild(item);
+    });
+    wrap.appendChild(sec);
+  });
+}
+
+// ═══════════════════════════════════════
+// GRID VIEW
+// ═══════════════════════════════════════
+function renderGrid(){
+  const inner=document.getElementById('gridInner');
+  inner.innerHTML='';
+  const wrap=document.getElementById('gridWrap');
+  wrap.innerHTML=`<div class="view-header" style="margin-bottom:24px">${t('All concepts — '+DEMO_CARDS.length+' cards','全概念 — '+DEMO_CARDS.length+'枚')}</div><div class="grid-inner" id="gridInner"></div>`;
+  const gi=document.getElementById('gridInner');
+  DEMO_CARDS.forEach(card=>{
+    const col=catColor(cardCat(card));
+    const el=document.createElement('div');
+    el.className='grid-card';
+    el.style.setProperty('--card-accent',col);
+    el.innerHTML=`
+      <div class="gc-type" style="color:${col}">${card.type}</div>
+      <div class="gc-title">${cardTitle(card)}</div>
+      <div class="gc-summary">${cardSummary(card).slice(0,120)}${cardSummary(card).length>120?'…':''}</div>
+      <div class="gc-tags">${(card.tags||[]).slice(0,4).map(t=>`<span class="gc-tag">${t}</span>`).join('')}</div>`;
+    el.onclick=()=>showPanel(card);
+    gi.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════
+// CARD PANEL
+// ═══════════════════════════════════════
+function showPanel(card){
+  const col=catColor(cardCat(card));
+  const rels=(card.related||[]).map(r=>{
+    const rc=DEMO_CARDS.find(c=>c.id===r.id);if(!rc) return '';
+    return `<div class="p-ri" onclick="showPanel(DEMO_CARDS.find(c=>c.id===${r.id}))">${cardTitle(rc)}</div>`;
+  }).join('');
+  const tags=(card.tags||[]).map(t=>`<span class="p-tag">${t}</span>`).join('');
+  const notes=cardNotes(card)||'';
+  document.getElementById('pcontent').innerHTML=`
+    <div class="p-type" style="color:${col}">${card.type}</div>
+    <div class="p-title">${cardTitle(card)}</div>
+    <div class="p-cat">${cardCat(card)}</div>
+    ${cardSummary(card)?`<div class="p-label">${t('Summary','概要')}</div><div class="p-text">${cardSummary(card)}</div>`:''}
+    ${tags?`<div class="p-tags">${tags}</div>`:''}
+    ${notes?`<div class="p-div"></div><div class="p-label">${t('Notes','ノート')}</div><div class="p-text" style="font-size:.78rem">${notes.replace(/\n/g,'<br>')}</div>`:''}
+    ${rels?`<div class="p-div"></div><div class="p-label">${t('Related','関連')}</div><div class="p-rel">${rels}</div>`:''}
+  `;
+  document.getElementById('panel').classList.add('open');
+}
+function closePanel(){ document.getElementById('panel').classList.remove('open'); }
+
+// ═══════════════════════════════════════
+// LEGEND
+// ═══════════════════════════════════════
+function buildLegend(){
+  const used=[...new Set(DEMO_CARDS.map(c=>cardCat(c)))];
+  document.getElementById('legend').innerHTML=used.map(cat=>`
+    <div class="lg-item">
+      <div class="lg-dot" style="background:${catColor(cat)}"></div>
+      <span>${cat}</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════
+// MANDALA MAP ENGINE
+// ═══════════════════════════════════════
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+let W=0,H=0;
+let mScale=1,mOx=0,mOy=0;
+let mDrag=false,mDown={x:0,y:0},mLast={x:0,y:0};
+let mHovered=null,mExpandedCat=null;
+let mCatPos={},mCardCurrent={},mCardTargets={};
+let mAnimFrame=null;
+const ANIM_SPEED=0.13;
+
+function buildLayout(){
+  const groups={};
+  DEMO_CARDS.forEach(c=>{const cat=cardCat(c);(groups[cat]=groups[cat]||[]).push(c);});
+  const cats=Object.keys(groups);
+  cats.sort((a,b)=>{
+    const la=Math.max(...groups[a].map(c=>new Date(c.updated||'2026-04-01').getTime()));
+    const lb=Math.max(...groups[b].map(c=>new Date(c.updated||'2026-04-01').getTime()));
+    return lb-la;
+  });
+  const n=cats.length;
+  const rings=[[],[],[]];
+  cats.forEach((cat,i)=>{
+    const t=Math.ceil(n/3);
+    rings[i<t?0:i<t*2?1:2].push(cat);
+  });
+  const RING_R=[150,260,370];
+  mCatPos={};
+  rings.forEach((catsInRing,ri)=>{
+    const nR=catsInRing.length;
+    catsInRing.forEach((cat,k)=>{
+      const offset=ri*(Math.PI/5);
+      const a=(k/nR)*Math.PI*2-Math.PI/2+offset;
+      const R=RING_R[ri];
+      const cc=(groups[cat]||[]).length;
+      mCatPos[cat]={x:Math.cos(a)*R,y:Math.sin(a)*R,r:26+Math.min(cc*4,22),cards:groups[cat]||[],color:catColor(cat)};
+    });
+  });
+}
+
+function setCardTargets(cat,expanded){
+  const cp=mCatPos[cat];if(!cp)return;
+  const cards=cp.cards,n=cards.length;
+  const spread=55+n*13;
+  cards.forEach((card,i)=>{
+    if(expanded){
+      const a=(i/n)*Math.PI*2-Math.PI/2;
+      mCardTargets[card.id]={x:cp.x+Math.cos(a)*spread,y:cp.y+Math.sin(a)*spread,visible:true};
+      if(!mCardCurrent[card.id]) mCardCurrent[card.id]={x:cp.x,y:cp.y,alpha:0};
+    } else {
+      mCardTargets[card.id]={x:cp.x,y:cp.y,visible:false};
+    }
+  });
+}
+
+function animateMandala(){
+  let moving=false;
+  DEMO_CARDS.forEach(card=>{
+    const t=mCardTargets[card.id],c=mCardCurrent[card.id];
+    if(!t||!c)return;
+    const ta=t.visible?1:0;
+    const dx=t.x-c.x,dy=t.y-c.y,da=ta-c.alpha;
+    if(Math.abs(dx)>.4||Math.abs(dy)>.4||Math.abs(da)>.008){
+      c.x+=dx*ANIM_SPEED;c.y+=dy*ANIM_SPEED;c.alpha+=da*ANIM_SPEED;
+      moving=true;
+    } else {c.x=t.x;c.y=t.y;c.alpha=ta;}
+  });
+  draw();
+  if(moving) mAnimFrame=requestAnimationFrame(animateMandala);
+  else mAnimFrame=null;
+}
+function startAnim(){if(mAnimFrame)cancelAnimationFrame(mAnimFrame);mAnimFrame=requestAnimationFrame(animateMandala);}
+
+function toS(wx,wy){return{x:W/2+(wx+mOx)*mScale,y:H/2+(wy+mOy)*mScale};}
+function toW(sx,sy){return{x:(sx-W/2)/mScale-mOx,y:(sy-H/2)/mScale-mOy};}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // Rings
+  [150,260,370].forEach((R,ri)=>{
+    const s=toS(0,0);
+    const fills=['rgba(201,169,110,.06)','rgba(96,165,250,.04)','rgba(71,85,105,.03)'];
+    const strokes=['rgba(201,169,110,.18)','rgba(96,165,250,.09)','rgba(71,85,105,.07)'];
+    ctx.beginPath();ctx.arc(s.x,s.y,R*mScale,0,Math.PI*2);
+    ctx.fillStyle=fills[ri];ctx.fill();
+    ctx.strokeStyle=strokes[ri];ctx.lineWidth=1;ctx.stroke();
+  });
+
+  // Connections for selected card (from panel)
+  const panelCard=DEMO_CARDS.find(c=>document.getElementById('panel').classList.contains('open')&&document.querySelector('.p-title')?.textContent===cardTitle(c));
+
+  // Card circles
+  DEMO_CARDS.forEach(card=>{
+    const c=mCardCurrent[card.id];if(!c||c.alpha<.01)return;
+    const s=toS(c.x,c.y),r=18*mScale;
+    const col=catColor(cardCat(card));
+    ctx.globalAlpha=c.alpha;
+    if(mHovered===card.id){
+      const g=ctx.createRadialGradient(s.x,s.y,r*.2,s.x,s.y,r*2.5);
+      g.addColorStop(0,col+'44');g.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(s.x,s.y,r*2.5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+    }
+    ctx.beginPath();ctx.arc(s.x,s.y,r,0,Math.PI*2);
+    ctx.fillStyle=mHovered===card.id?col+'33':'#0f172a';ctx.fill();
+    ctx.strokeStyle=mHovered===card.id?col:col+'88';ctx.lineWidth=1.5;ctx.stroke();
+    const inits={Thinker:'T',Literature:'L',Concept:'C',Work:'W'};
+    ctx.fillStyle=col+'cc';ctx.font=`bold 10px "DM Mono"`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(inits[card.type]||'?',s.x,s.y-r*.15);
+    const tt=cardTitle(card);const ts=tt.length>10?tt.slice(0,10)+'…':tt;
+    ctx.fillStyle=mHovered===card.id?'#e2e8f0':'#64748b';
+    ctx.font=`8px "Inter"`;ctx.textBaseline='top';
+    ctx.fillText(ts,s.x,s.y+r+4);
+    ctx.globalAlpha=1;
+  });
+
+  // Category circles
+  Object.entries(mCatPos).forEach(([cat,cp])=>{
+    const s=toS(cp.x,cp.y),r=cp.r*mScale;
+    const col=cp.color;
+    const isExp=mExpandedCat===cat,isH=mHovered===('cat:'+cat);
+    if(isExp||isH){
+      const g=ctx.createRadialGradient(s.x,s.y,r*.3,s.x,s.y,r*2);
+      g.addColorStop(0,col+(isExp?'44':'28'));g.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(s.x,s.y,r*2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+    }
+    ctx.beginPath();ctx.arc(s.x,s.y,r,0,Math.PI*2);
+    ctx.fillStyle=isExp?col+'33':isH?col+'22':'rgba(15,23,42,.92)';ctx.fill();
+    ctx.strokeStyle=isExp?col:isH?col+'cc':col+'66';
+    ctx.lineWidth=isExp?2.5:1.8;ctx.stroke();
+    const fontSize=Math.max(8,Math.min(11,cp.r*.45));
+    ctx.fillStyle=isExp||isH?col:'#94a3b8';
+    ctx.font=`${fontSize}px "Inter"`;ctx.textAlign='center';ctx.textBaseline='middle';
+    const lines=cat.replace(' & ','\n& ').replace('・','\n・').split('\n');
+    lines.forEach((line,li)=>ctx.fillText(line,s.x,s.y+(li-(lines.length-1)/2)*fontSize*1.3));
+    ctx.fillStyle=col+'99';ctx.font=`9px "DM Mono"`;
+    ctx.fillText(cp.cards.length,s.x,s.y+r*.58);
+  });
+
+  // Self
+  drawSelf();
+}
+
+function drawSelf(){
+  const s=toS(0,0),r=48*mScale;
+  const isH=mHovered==='self';
+  const g=ctx.createRadialGradient(s.x,s.y,r*.4,s.x,s.y,r*2.2);
+  g.addColorStop(0,isH?'rgba(201,169,110,.18)':'rgba(201,169,110,.1)');
+  g.addColorStop(1,'transparent');
+  ctx.beginPath();ctx.arc(s.x,s.y,r*2.2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+  ctx.beginPath();ctx.arc(s.x,s.y,r,0,Math.PI*2);
+  ctx.strokeStyle=isH?'rgba(201,169,110,.9)':'rgba(201,169,110,.65)';
+  ctx.lineWidth=isH?2.5:1.8;ctx.stroke();
+  ctx.beginPath();ctx.arc(s.x,s.y,r,0,Math.PI*2);ctx.fillStyle='#0a0f1e';ctx.fill();
+  ctx.save();ctx.beginPath();ctx.arc(s.x,s.y,r-1,0,Math.PI*2);ctx.clip();
+  ctx.beginPath();ctx.arc(s.x,s.y-r*.12,r*.36,0,Math.PI*2);
+  ctx.fillStyle='rgba(201,169,110,.72)';ctx.fill();
+  ctx.beginPath();ctx.ellipse(s.x,s.y+r*.38,r*.58,r*.35,0,Math.PI,0);ctx.fill();
+  ctx.restore();
+  ctx.fillStyle='rgba(201,169,110,.9)';ctx.font='11px "Inter"';
+  ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText(profile.name,s.x,s.y+r+10);
+  ctx.fillStyle='rgba(148,163,184,.55)';ctx.font='9px "Inter"';
+  ctx.fillText(profile.role.slice(0,30),s.x,s.y+r+24);
+  if(profile.bio){ctx.fillStyle='rgba(148,163,184,.4)';ctx.font='8px "Inter"';ctx.fillText(profile.bio.slice(0,35),s.x,s.y+r+37);}
+}
+
+function hitTest(mx,my){
+  for(let i=DEMO_CARDS.length-1;i>=0;i--){
+    const card=DEMO_CARDS[i],c=mCardCurrent[card.id];
+    if(!c||c.alpha<.3)continue;
+    const s=toS(c.x,c.y),r=18*mScale;
+    if((mx-s.x)**2+(my-s.y)**2<r*r)return{type:'card',card};
+  }
+  for(const[cat,cp]of Object.entries(mCatPos)){
+    const s=toS(cp.x,cp.y),r=cp.r*mScale;
+    if((mx-s.x)**2+(my-s.y)**2<r*r)return{type:'cat',cat};
+  }
+  const ss=toS(0,0),sr=48*mScale;
+  if((mx-ss.x)**2+(my-ss.y)**2<sr*sr)return{type:'self'};
+  return null;
+}
+
+function initMandala(){
+  const wrap=document.getElementById('wrap');
+  canvas.width=W=wrap.offsetWidth;
+  canvas.height=H=wrap.offsetHeight;
+  buildLayout();
+  DEMO_CARDS.forEach(card=>{
+    const cat=cardCat(card),cp=mCatPos[cat];
+    if(cp&&!mCardCurrent[card.id])mCardCurrent[card.id]={x:cp.x,y:cp.y,alpha:0};
+    if(cp)mCardTargets[card.id]={x:cp.x,y:cp.y,visible:false};
+  });
+  draw();
+  canvas.onmousedown=e=>{mDrag=true;mDown={x:e.clientX,y:e.clientY};mLast={x:e.clientX,y:e.clientY};};
+  canvas.onmousemove=e=>{
+    const rect=canvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+    if(mDrag){mOx+=(e.clientX-mLast.x)/mScale;mOy+=(e.clientY-mLast.y)/mScale;mLast={x:e.clientX,y:e.clientY};draw();return;}
+    const hit=hitTest(mx,my);
+    const nh=hit?(hit.type==='cat'?'cat:'+hit.cat:hit.type==='self'?'self':hit.card.id):null;
+    if(nh!==mHovered){mHovered=nh;canvas.style.cursor=mHovered?'pointer':'grab';draw();}
+  };
+  canvas.onmouseup=e=>{
+    mDrag=false;
+    const moved=Math.abs(e.clientX-mDown.x)+Math.abs(e.clientY-mDown.y);
+    if(moved<6){
+      const rect=canvas.getBoundingClientRect();
+      const hit=hitTest(e.clientX-rect.left,e.clientY-rect.top);
+      if(hit){
+        if(hit.type==='self'){openProfilePanel();}
+        else if(hit.type==='cat'){
+          const prev=mExpandedCat;
+          if(prev&&prev!==hit.cat)setCardTargets(prev,false);
+          mExpandedCat=mExpandedCat===hit.cat?null:hit.cat;
+          setCardTargets(hit.cat,mExpandedCat===hit.cat);
+          startAnim();
+        } else {showPanel(hit.card);}
+      } else {
+        if(mExpandedCat){setCardTargets(mExpandedCat,false);mExpandedCat=null;startAnim();}
+        closePanel();
+      }
+    }
+  };
+  canvas.onwheel=e=>{
+    e.preventDefault();
+    const rect=canvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+    const wb=toW(mx,my);
+    mScale*=e.deltaY<0?1.1:.91;mScale=Math.max(.2,Math.min(4,mScale));
+    const wa=toW(mx,my);mOx+=wa.x-wb.x;mOy+=wa.y-wb.y;draw();
+  };
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+loadProfile();
+buildLegend();
+document.getElementById('hint').innerHTML=t(
+  'Click category → expand cards · Click card → details · Drag · Scroll to zoom',
+  'カテゴリクリック→カード展開 · カードクリック→詳細 · ドラッグ · スクロールでズーム'
+);
+window.addEventListener('resize',()=>{
+  if(currentView==='map'){const wrap=document.getElementById('wrap');canvas.width=W=wrap.offsetWidth;canvas.height=H=wrap.offsetHeight;buildLayout();draw();}
+});
+window.addEventListener('load',()=>setTimeout(()=>initMandala(),80));
+</script>
+</body>
+</html>

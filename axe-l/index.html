@@ -150,6 +150,37 @@ hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
 .portfolio-card p{
   font-size:.85rem;color:var(--dim);line-height:1.75;margin:0;
 }
+.portfolio-card-link{
+  display:block;
+  text-decoration:none;
+  background:var(--navy2);
+  border:1px solid var(--border2);
+  border-left:3px solid var(--teal);
+  border-radius:4px;
+  padding:24px 28px;
+  margin-top:4px;
+  transition:background .2s,border-left-color .2s;
+  cursor:pointer;
+}
+.portfolio-card-link:hover{
+  background:var(--navy3);
+  border-left-color:var(--teal2);
+}
+.portfolio-card-link h4{
+  font-size:.92rem;font-weight:500;color:var(--text);
+  margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.portfolio-card-link h4 .arrow{
+  font-family:'DM Mono',monospace;
+  font-size:.75rem;color:var(--teal);
+  margin-left:auto;
+  transition:transform .2s;
+}
+.portfolio-card-link:hover .arrow{transform:translate(2px,-2px);}
+.portfolio-card-link p{
+  font-size:.85rem;color:var(--dim);line-height:1.75;margin:0;
+}
 .status-badge{
   display:inline-block;
   font-family:'DM Mono',monospace;
@@ -158,7 +189,7 @@ hr{border:none;border-top:1px solid var(--border);margin:48px 0;}
   background:rgba(45,212,191,.08);
   border:1px solid rgba(45,212,191,.2);
   color:var(--teal);
-  margin-left:10px;vertical-align:middle;
+  vertical-align:middle;
 }
 
 /* LANG TOGGLE */
@@ -252,10 +283,15 @@ footer p{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--dim);}
   <div class="sec">
     <div class="sec-label"><span class="ja">ポートフォリオ構想</span><span class="en">Portfolio Vision</span></div>
     <h2><span class="ja">ポートフォリオ構想</span><span class="en">Portfolio Vision</span></h2>
-    <div class="portfolio-card">
-      <h4><span class="ja">曼陀羅マップ</span><span class="en">Mandala Map</span> <span class="status-badge"><span class="ja">構想中</span><span class="en">Concept stage</span></span></h4>
+
+    <a href="./mandala_map/" class="portfolio-card-link">
+      <h4>
+        <span><span class="ja">曼陀羅マップ</span><span class="en">Mandala Map</span></span>
+        <span class="status-badge"><span class="ja">デモ公開中</span><span class="en">Demo live</span></span>
+        <span class="arrow">↗</span>
+      </h4>
       <p><span class="ja">学習者を中心に置き、蓄積された学習の軸をバブルとして多軸的に可視化するポートフォリオ。各軸の接続がスパークを生む。Gamificationによる継続的達成感の設計を組み込む。</span><span class="en">A portfolio that places the learner at its centre, visualising accumulated learning axes as expanding bubbles. Connections between axes generate new insight. Incorporates gamification for sustained sense of achievement.</span></p>
-    </div>
+    </a>
   </div>
 
 </div>
